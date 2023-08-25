@@ -1,0 +1,13 @@
+#Tribe Prices
+
+#Price to create a tribe
+create: 0
+
+#Price to set a tribe warp
+setwarp: 50
+
+#Price to warp
+gotowarp: 0
+
+#Change tribe name
+changename: 50

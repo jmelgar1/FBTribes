@@ -1,0 +1,25 @@
+api-version: 1.16
+name: FBTribes
+version: 1.03
+author: TheFruitBox
+website: www.thefruitbox.net
+main: org.thefruitbox.fbtribes.Main
+description: FBTribes Commands
+commands:
+  tribes:
+    description: Create tribes
+    usage: /tribes create
+  claimsponges:
+    description: Claim a sponge reward
+    usage: /claimsponges
+  setsponges:
+    description: Set sponge reward
+    usage: /setsponges [player] [amount]
+    permission: tribes.setsponges
+  addsponges:
+    description: Ad sponge reward
+    usage: /addsponges [player] [amount]
+    permission: tribes.addsponges
+  beginctf:
+    description: Begin CTF Game
+    usage: /beginctf
