@@ -62,8 +62,10 @@ public class depositCommand extends SubCommand {
 					InventoryManager.removeItems(p.getInventory(), Material.SPONGE, spongeCount);
 					tribeManager.addToVault(playerTribe, spongeCount, p);
 					p.sendMessage(ChatColor.GREEN + "You have deposited " + spongeCount + " sponges into the tribe bank!");
+
+					tribeManager.generateScorePerTribe(playerTribe);
 					
-				} else if(isNumeric(amount) == true) {
+				} else if(isNumeric(amount)) {
 					int intAmount = Integer.parseInt(amount);
 					ItemStack sponges = new ItemStack(Material.SPONGE, intAmount);
 					if(p.getInventory().containsAtLeast(sponges, intAmount)) {
@@ -71,6 +73,7 @@ public class depositCommand extends SubCommand {
 							
 						tribeManager.addToVault(playerTribe, intAmount, p);
 						p.sendMessage(ChatColor.GREEN + "You have deposited " + intAmount + " sponges into the tribe bank!");
+						tribeManager.generateScorePerTribe(playerTribe);
 					} else {
 						p.sendMessage(ChatColor.RED + "You do not have " + intAmount + " sponges in your inventory!");
 					}

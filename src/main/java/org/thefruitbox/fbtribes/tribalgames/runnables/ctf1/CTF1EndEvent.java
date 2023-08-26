@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.thefruitbox.fbtribes.managers.TribeManager;
 import org.thefruitbox.fbtribes.tribalgames.managers.CTF1Manager;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 import org.thefruitbox.fbtribes.utilities.GeneralUtilities;
 
 import com.sk89q.worldguard.domains.DefaultDomain;
@@ -27,8 +28,8 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.md_5.bungee.api.ChatColor;
 
 public class CTF1EndEvent extends BukkitRunnable implements CTF1Manager {
-	
-	TribeManager tm = new TribeManager();
+
+	private final ChatUtilities cu = new ChatUtilities();
 
 	@SuppressWarnings("null")
 	@Override
@@ -45,7 +46,7 @@ public class CTF1EndEvent extends BukkitRunnable implements CTF1Manager {
 		int redTeamCaptures = CTF1Manager.getRedTeam().getInt("captures");
 		int blueTeamCaptures = CTF1Manager.getBlueTeam().getInt("captures");
 		
-		CTF1Manager.sendParticipantsMessage(mainClass.tgPrefix + ChatColor.YELLOW + "CTF has ended!", Sound.BLOCK_END_PORTAL_SPAWN, 0.5F, 0F);
+		CTF1Manager.sendParticipantsMessage(cu.tgPrefix + ChatColor.YELLOW + "CTF has ended!", Sound.BLOCK_END_PORTAL_SPAWN, 0.5F, 0F);
 		
 		Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "=======" + ChatColor.YELLOW.toString()
 		+ ChatColor.BOLD + "CTF Final Score" + ChatColor.DARK_GRAY +"=======");
@@ -106,7 +107,7 @@ public class CTF1EndEvent extends BukkitRunnable implements CTF1Manager {
 		
 		//REMOVE
 		CTF1Manager.sendParticipantsMessage("", null, 0F, 0F);
-		CTF1Manager.sendParticipantsMessage(mainClass.tgPrefix + ChatColor.RED + "This feature is currently in beta testing. Rewards are currently"
+		CTF1Manager.sendParticipantsMessage(cu.tgPrefix + ChatColor.RED + "This feature is currently in beta testing. Rewards are currently"
 				+ "disabled until feature is stable.", null, 0F, 0F);
 		
     	//giveSpongeReward(winners, amount);
@@ -149,7 +150,7 @@ public class CTF1EndEvent extends BukkitRunnable implements CTF1Manager {
 			    		ItemStack stack = entry.getValue();
 			    		if(stack.getAmount() > 0) {
 			    			int amountClaimed = 100 - stack.getAmount();
-			    			p.sendMessage(mainClass.spongeColor + "You have won " + amountClaimed + " sponges!");
+			    			p.sendMessage(cu.spongeColor + "You have won " + amountClaimed + " sponges!");
 				    		p.sendMessage(ChatColor.RED + "Inventory full. Could not claim " + stack.getAmount() + " sponges.");
 				    		
 				    		ConfigurationSection rewards = mainClass.getRewards();
@@ -160,7 +161,7 @@ public class CTF1EndEvent extends BukkitRunnable implements CTF1Manager {
 			    		}
 			    	}    	
 		    	} else {
-		    		p.sendMessage(mainClass.spongeColor + "You have won " + amount + " sponges!");
+		    		p.sendMessage(cu.spongeColor + "You have won " + amount + " sponges!");
 		    	}
 			}
 		}

@@ -38,7 +38,7 @@ public class deleteCommand extends SubCommand {
 			String deletedTribe = args[1];
 			String playerTribe = tribeManager.getPlayerTribe(p);
 			if(!playerTribe.equals("none")) {
-				if(tribeManager.CheckForChief(playerTribe, p) == true) {
+				if(tribeManager.CheckForChief(playerTribe, p)) {
 					if(deletedTribe.equalsIgnoreCase(playerTribe)) {
 					String tribe = tribeManager.getPlayerTribe(p);
 					FileConfiguration tribesFile = mainClass.getTribes();

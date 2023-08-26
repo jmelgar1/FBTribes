@@ -4,12 +4,12 @@
     <root id="archive" name="FBTribes.jar">
       <element id="module-output" name="FBTribes.main" />
       <element id="module-test-output" name="FBTribes.test" />
-      <element id="file-copy" path="$PROJECT_DIR$/tribes_json.json" />
       <element id="file-copy" path="$PROJECT_DIR$/unclaimedRewards.yml" />
-      <element id="file-copy" path="$PROJECT_DIR$/tribes.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/prices.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/plugin.yml" />
       <element id="file-copy" path="$PROJECT_DIR$/ctf.yml" />
+      <element id="file-copy" path="$PROJECT_DIR$/tribes_json.json" />
+      <element id="file-copy" path="$PROJECT_DIR$/tribes.yml" />
     </root>
   </artifact>
 </component>

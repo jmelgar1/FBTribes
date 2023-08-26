@@ -36,10 +36,10 @@ public class demoteCommand extends SubCommand {
 			String playerTribe = tribeManager.getPlayerTribe(p);
 			if(demotedPlayer != null) {
 				String demotedPlayerTribe = tribeManager.getPlayerTribe(demotedPlayer);
-				if(tribeManager.CheckForChief(playerTribe, p) == true) {
+				if(tribeManager.CheckForChief(playerTribe, p)) {
 					if(playerTribe.equals(demotedPlayerTribe)) {
 						if(!demotedPlayer.getName().equals(p.getName())) {
-							if(tribeManager.CheckForElder(demotedPlayerTribe, demotedPlayer) == true) {
+							if(tribeManager.CheckForElder(demotedPlayerTribe, demotedPlayer)) {
 								tribeManager.removeElder(playerTribe);
 								tribeManager.sendMessageToMembers(playerTribe, ChatColor.RED + demotedPlayer.getName() + " has been demoted from elder!");
 							} else {

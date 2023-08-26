@@ -10,8 +10,11 @@ import org.bukkit.scoreboard.Scoreboard;
 import org.thefruitbox.fbtribes.tribalgames.managers.CTF1Manager;
 
 import net.md_5.bungee.api.ChatColor;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class UpdateScoreboard extends BukkitRunnable implements CTF1Manager {
+
+	private final ChatUtilities cu = new ChatUtilities();
 	
 	@Override
 	public void run() {
@@ -30,7 +33,7 @@ public class UpdateScoreboard extends BukkitRunnable implements CTF1Manager {
 			for(String s : CTF1Manager.getParticipants()) {
 				//create new scoreboard
 				Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();	
-				String title = mainClass.tgPrefix + ChatColor.YELLOW.toString() + ChatColor.BOLD + "CTF";
+				String title = cu.tgPrefix + ChatColor.YELLOW.toString() + ChatColor.BOLD + "CTF";
 				Objective obj = board.registerNewObjective("FBCTF", "dummy", title);
 				
 				obj.setDisplaySlot(DisplaySlot.SIDEBAR);
@@ -43,11 +46,11 @@ public class UpdateScoreboard extends BukkitRunnable implements CTF1Manager {
 					redTeamLead(obj, redCaptures, redKills, blueCaptures, blueKills, redName, blueName);
 				} else if (blueCaptures > redCaptures) {
 					blueTeamLead(obj, redCaptures, redKills, blueCaptures, blueKills, redName, blueName);
-				} else if (redCaptures == blueCaptures && redKills > blueKills){
+				} else if (redKills > blueKills){
 					redTeamLead(obj, redCaptures, redKills, blueCaptures, blueKills, redName, blueName);
-				} else if (redCaptures == blueCaptures && redKills < blueKills) {
+				} else if (redKills < blueKills) {
 					blueTeamLead(obj, redCaptures, redKills, blueCaptures, blueKills, redName, blueName);
-				} else if (redCaptures == blueCaptures && redKills == blueKills) {
+				} else {
 					redTeamLead(obj, redCaptures, redKills, blueCaptures, blueKills, redName, blueName);
 				}
 				
@@ -67,9 +70,9 @@ public class UpdateScoreboard extends BukkitRunnable implements CTF1Manager {
 					p.setScoreboard(board);
 				}
 			}
-		} while (CTF1Manager.ctf.getBoolean("event") != true);
+		} while (!CTF1Manager.ctf.getBoolean("event"));
 		
-		if(CTF1Manager.ctf.getBoolean("event") == false) {
+		if(!CTF1Manager.ctf.getBoolean("event")) {
 			cancel();
 		}
 	}

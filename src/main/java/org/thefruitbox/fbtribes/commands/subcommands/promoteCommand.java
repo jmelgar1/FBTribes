@@ -35,7 +35,7 @@ public class promoteCommand extends SubCommand {
 			Player promotedPlayer = Bukkit.getServer().getPlayer(args[1]);
 			String playerTribe = tribeManager.getPlayerTribe(p);
 			if(promotedPlayer != null) {
-				if(tribeManager.CheckForChief(playerTribe, p) == true) {
+				if(tribeManager.CheckForChief(playerTribe, p)) {
 				String promotedPlayerTribe = tribeManager.getPlayerTribe(promotedPlayer);
 					if(tribeManager.getElder(playerTribe).equals("")) {
 						if(playerTribe.equals(promotedPlayerTribe)) {

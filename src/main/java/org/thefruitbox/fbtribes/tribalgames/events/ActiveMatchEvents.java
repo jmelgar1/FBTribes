@@ -46,7 +46,7 @@ public class ActiveMatchEvents extends CTFEvents implements Listener, CTF1Manage
 	
 	@EventHandler
 	public void onSteal(BlockBreakEvent e) {
-		Block b = (Block) e.getBlock();
+		Block b = e.getBlock();
 		Player p = e.getPlayer();
 		String playerName = p.getName();
 		
@@ -83,8 +83,8 @@ public class ActiveMatchEvents extends CTFEvents implements Listener, CTF1Manage
 		Player p = e.getPlayer();
 		String playerName = p.getName();
 		
-		if(e.getRegion().equals(regions.getRegion("blueflag1")) && CTF1Manager.checkIfPlayerHasRedFlag(p) == true) {
-			if(CTF1Manager.checkIfBlueFlagIsTaken() == false) {
+		if(e.getRegion().equals(regions.getRegion("blueflag1")) && CTF1Manager.checkIfPlayerHasRedFlag(p)) {
+			if(!CTF1Manager.checkIfBlueFlagIsTaken()) {
 				getCaptureTeam(ChatColor.BLUE, "Red Flag", playerName, blueTeam, p);
 				CTF1Manager.resetFlag(regions.getRegion("redflag1"), Material.RED_BANNER, world);
 			} else {
@@ -92,8 +92,8 @@ public class ActiveMatchEvents extends CTFEvents implements Listener, CTF1Manage
 			}
 		}
 		
-		if(e.getRegion().equals(regions.getRegion("redflag1")) && CTF1Manager.checkIfPlayerHasBlueFlag(p) == true) {
-			if(CTF1Manager.checkIfRedFlagIsTaken() == false) {
+		if(e.getRegion().equals(regions.getRegion("redflag1")) && CTF1Manager.checkIfPlayerHasBlueFlag(p)) {
+			if(!CTF1Manager.checkIfRedFlagIsTaken()) {
 				getCaptureTeam(ChatColor.RED, "Blue Flag", playerName, redTeam, p);
 				CTF1Manager.resetFlag(regions.getRegion("blueflag1"), Material.BLUE_BANNER, world);
 			} else {
@@ -126,14 +126,14 @@ public class ActiveMatchEvents extends CTFEvents implements Listener, CTF1Manage
 	public void onKill(PlayerDeathEvent e) {
 		Player p = e.getEntity();
 		Entity entity = p.getKiller();
-		
-		if(entity instanceof Player) {
+
+		if(entity != null) {
 			if(participants.contains(p.getName())) {
 				Player killer = (Player) entity;
 				String killerTeam = CTF1Manager.getTeam(killer);
 				
 				if(killerTeam.equals("red")) {
-					if(CTF1Manager.checkIfPlayerHasRedFlag(p) == true) {
+					if(CTF1Manager.checkIfPlayerHasRedFlag(p)) {
 						resetFlagholder(blueTeam, ChatColor.RED, "Red flag");
 						CTF1Manager.resetFlag(regions.getRegion("redflag1"), Material.RED_BANNER, world);
 					}
@@ -141,7 +141,7 @@ public class ActiveMatchEvents extends CTFEvents implements Listener, CTF1Manage
 					killedPlayerMessage(killer, ChatColor.RED, "red", redTeam);
 					
 				} else if(killerTeam.equals("blue")) {
-					if(CTF1Manager.checkIfPlayerHasBlueFlag(p) == true) {
+					if(CTF1Manager.checkIfPlayerHasBlueFlag(p)) {
 						resetFlagholder(redTeam, ChatColor.BLUE, "Blue flag");
 						CTF1Manager.resetFlag(regions.getRegion("blueflag1"), Material.BLUE_BANNER, world);
 					}

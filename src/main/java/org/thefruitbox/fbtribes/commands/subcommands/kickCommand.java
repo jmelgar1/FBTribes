@@ -54,6 +54,7 @@ public class kickCommand extends SubCommand {
 	
 							kickedPlayer.sendMessage(ChatColor.RED + "You have been kicked from " + kickedPlayerTribe + "!");
 							tribeManager.sendMessageToMembers(playerTribe, ChatColor.RED + kickedPlayer.getName() + " has been kicked from the tribe!");
+							tribeManager.generateScorePerTribe(playerTribe);
 						} else {
 							p.sendMessage(ChatColor.RED + kickedPlayer.getName() + " is not in your tribe!");
 						}

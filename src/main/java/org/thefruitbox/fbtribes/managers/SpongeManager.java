@@ -15,8 +15,7 @@ public class SpongeManager {
 		if(rewards.getConfigurationSection(playerUUID) != null) {
 			ConfigurationSection rewardSection = rewards.getConfigurationSection(playerUUID);
 			if(rewardSection.getInt("unclaimed") != 0) {
-				int amount = rewardSection.getInt("unclaimed");
-				return amount;
+				return rewardSection.getInt("unclaimed");
 			}
 		}
 		return 0;

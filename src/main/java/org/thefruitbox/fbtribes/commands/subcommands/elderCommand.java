@@ -1,15 +1,15 @@
 package org.thefruitbox.fbtribes.commands.subcommands;
 
 import org.bukkit.entity.Player;
-import org.thefruitbox.fbtribes.Main;
 import org.thefruitbox.fbtribes.commands.SubCommand;
 
 import net.md_5.bungee.api.ChatColor;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class elderCommand extends SubCommand {
 	
 	//Main instance
-	private Main mainClass = Main.getInstance();
+	private final ChatUtilities cu = new ChatUtilities();
 
 	@Override
 	public String getName() {
@@ -31,17 +31,17 @@ public class elderCommand extends SubCommand {
 
 	@Override
 	public void perform(Player p, String[] args) {
-		p.sendMessage(ChatColor.GRAY + "----- " + mainClass.tribesColor + "TRIBES" + ChatColor.GRAY + " -----");
+		p.sendMessage(ChatColor.GRAY + "----- " + cu.tribesColor + "TRIBES" + ChatColor.GRAY + " -----");
 		p.sendMessage(ChatColor.DARK_RED + "These commands are restricted to Elders & Chiefs only!");
-		p.sendMessage(mainClass.lightGreen + "1. " + mainClass.lighterGreen + "/tribes invite" +
+		p.sendMessage(cu.lightGreen + "1. " + cu.lighterGreen + "/tribes invite" +
 				ChatColor.GRAY + " (Invite a player to your tribe)");
-		p.sendMessage(mainClass.lightGreen + "2. " + mainClass.lighterGreen + "/tribes withdraw" +
+		p.sendMessage(cu.lightGreen + "2. " + cu.lighterGreen + "/tribes withdraw" +
 				ChatColor.GRAY + " (Withdraw sponges from vault)");
-		p.sendMessage(mainClass.lightGreen + "3. " + mainClass.lighterGreen + "/tribes kick" +
+		p.sendMessage(cu.lightGreen + "3. " + cu.lighterGreen + "/tribes kick" +
 				ChatColor.GRAY + " (Kick a player from your tribe)");
-		p.sendMessage(mainClass.lightGreen + "4. " + mainClass.lighterGreen + "/tribes setcompound" +
+		p.sendMessage(cu.lightGreen + "4. " + cu.lighterGreen + "/tribes setcompound" +
 				ChatColor.GRAY + " (Set a tribe compound)");
-		p.sendMessage(mainClass.lightGreen + "5. " + mainClass.lighterGreen + "/tribes delcompound" +
+		p.sendMessage(cu.lightGreen + "5. " + cu.lighterGreen + "/tribes delcompound" +
 				ChatColor.GRAY + " (Delete a tribe compound)");
 		
 //		tribes create [name]

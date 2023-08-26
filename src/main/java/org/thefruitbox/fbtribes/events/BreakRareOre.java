@@ -16,15 +16,19 @@ import org.thefruitbox.fbtribes.managers.EventManager;
 
 import net.coreprotect.CoreProtectAPI;
 import net.coreprotect.CoreProtectAPI.ParseResult;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
-public class BreakDiamondOrEmeraldOre extends EventManager implements Listener {
+public class BreakRareOre extends EventManager implements Listener {
+
+	private final ChatUtilities cu = new ChatUtilities();
 	
 	CoreProtectAPI api = getCoreProtect();
 	
-	List<Material> blocks = Arrays.asList(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE, Material.EMERALD_ORE);
+	List<Material> blocks = Arrays.asList(Material.DIAMOND_ORE, Material.DEEPSLATE_DIAMOND_ORE,
+			Material.EMERALD_ORE, Material.DEEPSLATE_EMERALD_ORE, Material.ANCIENT_DEBRIS);
 	
 	@EventHandler
-	public void breakDiamond(BlockBreakEvent e) {
+	public void breakDiamondAndEmerald(BlockBreakEvent e) {
 		Block b = (Block) e.getBlock();
 		Player p = e.getPlayer();
 		
@@ -48,15 +52,16 @@ public class BreakDiamondOrEmeraldOre extends EventManager implements Listener {
 				}
 			}
 			
-			if(blockPlaced == false) {
-				int amountDropped = spongeManager.getRandomNumber(0, 4);
-				if(amountDropped > 0) {
-					b.getWorld().dropItem(b.getLocation(), new ItemStack(Material.SPONGE, amountDropped));
-					if(material == Material.DIAMOND_ORE || material == Material.DEEPSLATE_DIAMOND_ORE) {
-						p.sendMessage(mainClass.spongeColor + "You earned " + amountDropped + " sponges from the diamond ore!");
+			if(!blockPlaced) {
+				int amountDropped = 0;
+				if(blocks.contains(material)) {
+					if (material == Material.ANCIENT_DEBRIS){
+						amountDropped = spongeManager.getRandomNumber(5, 8);
 					} else {
-						p.sendMessage(mainClass.spongeColor + "You earned " + amountDropped + " sponges from the emerald ore!");
+						amountDropped = spongeManager.getRandomNumber(1, 4);
 					}
+					b.getWorld().dropItem(b.getLocation(), new ItemStack(Material.SPONGE, amountDropped));
+					p.sendMessage(cu.spongeColor + "You earned " + amountDropped + " sponges from the " + material);
 				}	
 			}		
 		}

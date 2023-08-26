@@ -11,6 +11,7 @@ import org.thefruitbox.fbtribes.commands.SubCommand;
 import org.thefruitbox.fbtribes.managers.TribeManager;
 
 import net.md_5.bungee.api.ChatColor;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class inviteCommand extends SubCommand {
 	
@@ -18,6 +19,8 @@ public class inviteCommand extends SubCommand {
 	
 	//Main instance
 	private Main mainClass = Main.getInstance();
+
+	private final ChatUtilities cu = new ChatUtilities();
 	
 	TribeManager tribeManager = new TribeManager();
 	
@@ -75,7 +78,7 @@ public class inviteCommand extends SubCommand {
 								if(alreadyInvited == false) {
 									TribeInvites.put(playerTribe, invitee);
 									
-									invitee.sendMessage(mainClass.tribesColor + "You have been invited to join " + mainClass.lightGreen + tribeName
+									invitee.sendMessage(cu.tribesColor + "You have been invited to join " + cu.lightGreen + tribeName
 											+ ChatColor.GRAY + "\nType " + ChatColor.DARK_GREEN + "/tribes accept " + playerTribe + ChatColor.GRAY + " to accept the invite! "
 											+ ChatColor.GRAY + "\nType " + ChatColor.DARK_RED + "/tribes decline " + playerTribe + ChatColor.GRAY + " to decline the invite! "
 											+ ChatColor.DARK_GRAY + "\nThis request will expire in 3 minutes!");
@@ -86,7 +89,7 @@ public class inviteCommand extends SubCommand {
 										
 										@Override
 										public void run() {
-											if(CheckForActiveInvite(TribeInvites, playerTribe.toLowerCase(), invitee) == true) {
+											if(CheckForActiveInvite(TribeInvites, playerTribe.toLowerCase(), invitee)) {
 												TribeInvites.remove(playerTribe, invitee);
 												p.sendMessage(ChatColor.RED + "Your tribe invite to " + playerIGN + " has expired!");
 												invitee.sendMessage(ChatColor.RED + "Your invitation to join " + playerTribe + " has expired!");

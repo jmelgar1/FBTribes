@@ -26,11 +26,14 @@ import org.thefruitbox.fbtribes.managers.TribeManager;
 import org.thefruitbox.fbtribes.managers.WarpManager;
 
 import net.md_5.bungee.api.ChatColor;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class infoCommand extends SubCommand implements Listener {
 	
 	//Main instance
 	private Main mainClass = Main.getInstance();
+
+	private final ChatUtilities cu = new ChatUtilities();
 	
 	static TribeManager tribeManager = new TribeManager();
 	static WarpManager warpManager = new WarpManager();
@@ -57,7 +60,6 @@ public class infoCommand extends SubCommand implements Listener {
 
 	@Override
 	public void perform(Player p, String[] args) {
-		tribeManager.generateScore();
 		String playerTribe = tribeManager.getPlayerTribe(p);
 		FileConfiguration tribesFile = mainClass.getTribes();
 		
@@ -65,7 +67,7 @@ public class infoCommand extends SubCommand implements Listener {
 		if(args.length == 1) {
 			if(!playerTribe.equals("none")) {
       	        
-	        	inv = Bukkit.createInventory(null, 54, mainClass.tribalGames.toString() + ChatColor.BOLD + playerTribe.toUpperCase() + " Tribe Profile");
+	        	inv = Bukkit.createInventory(null, 54, cu.tribalGames.toString() + ChatColor.BOLD + playerTribe.toUpperCase() + " Tribe Profile");
 	        	openInventory(p);
 	        	initializeItems(p, playerTribe);
 				
@@ -114,22 +116,22 @@ public class infoCommand extends SubCommand implements Listener {
 				, Material.LAPIS_LAZULI, Material.EMERALD, Material.DIAMOND, Material.NETHERITE_INGOT, Material.NETHER_STAR};
 		
 		if(requiredSponges != -1) {
-			inv.setItem(4, createGuiItem(levelItems[level-1], mainClass.tribalGames.toString() + ChatColor.BOLD + tribe.toUpperCase(), 
+			inv.setItem(4, createGuiItem(levelItems[level-1], cu.tribalGames.toString() + ChatColor.BOLD + tribe.toUpperCase(),
 					ChatColor.GRAY + "Date Founded: " + ChatColor.WHITE + dateCreated, 
 					ChatColor.GRAY + "Level: " + ChatColor.WHITE + level,
 					ChatColor.GRAY + "Vault: " + ChatColor.WHITE + vault,
-					ChatColor.GRAY + "Cost to upgrade: " + mainClass.spongeColor + requiredSponges,
+					ChatColor.GRAY + "Cost to upgrade: " + cu.spongeColor + requiredSponges,
 					"",
 					ChatColor.GOLD.toString() + ChatColor.UNDERLINE + "Scores:",
 					ChatColor.YELLOW + "Rating: " + ratingScore,
 					ChatColor.GREEN + "Economy Score: " + economyScore,
 					ChatColor.LIGHT_PURPLE + "Power Score: " + powerScore));
 		} else {
-			inv.setItem(4, createGuiItem(levelItems[level-1], mainClass.tribalGames.toString() + ChatColor.BOLD + tribe.toUpperCase(), 
+			inv.setItem(4, createGuiItem(levelItems[level-1], cu.tribalGames.toString() + ChatColor.BOLD + tribe.toUpperCase(),
 					ChatColor.GRAY + "Date Founded: " + ChatColor.WHITE + dateCreated, 
 					ChatColor.GRAY + "Level: " + ChatColor.WHITE + level,
 					ChatColor.GRAY + "Vault: " + ChatColor.WHITE + vault,
-					ChatColor.GRAY + "Cost to upgrade: " + mainClass.spongeColor + "MAX LEVEL",
+					ChatColor.GRAY + "Cost to upgrade: " + cu.spongeColor + "MAX LEVEL",
 					"",
 					ChatColor.YELLOW + "Rating: " + ratingScore,
 					ChatColor.DARK_GREEN + "Economy: " + economyScore,
@@ -152,13 +154,13 @@ public class infoCommand extends SubCommand implements Listener {
 				ChatColor.GRAY + "Chief: " + chief,
 				ChatColor.GRAY + "Elder: " + elder));
 		
-		inv.setItem(23, createGuiItem(Material.SLIME_BALL, mainClass.tribalGames.toString() + ChatColor.BOLD + "TRIBAL GAMES",
+		inv.setItem(23, createGuiItem(Material.SLIME_BALL, cu.tribalGames.toString() + ChatColor.BOLD + "TRIBAL GAMES",
 				ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + "Wins:",
 				ChatColor.GRAY + "CTF: " + tribeManager.getCTFWins(tribe),
 				ChatColor.GRAY + "KOTH: " + 0,
 				ChatColor.GRAY + "TOTT: " + 0));
 		
-		inv.setItem(25, createGuiItem(Material.SPONGE, mainClass.spongeColor.toString() + ChatColor.BOLD + "TRIBE SHOP", 
+		inv.setItem(25, createGuiItem(Material.SPONGE, cu.spongeColor.toString() + ChatColor.BOLD + "TRIBE SHOP",
 				ChatColor.DARK_PURPLE+ "Coming Soon..."));
 		
 		inv.setItem(8, createGuiItem(Material.BARRIER, ChatColor.RED.toString() + ChatColor.BOLD + "EXIT", 
@@ -287,7 +289,7 @@ public class infoCommand extends SubCommand implements Listener {
 			if(inventoryTitle.contains("Tribe Profile")) {
 				p.closeInventory();
 			} else {
-	        	inv = Bukkit.createInventory(null, 54, mainClass.tribalGames.toString() + ChatColor.BOLD + playerTribe.toUpperCase() + " Tribe Profile");
+	        	inv = Bukkit.createInventory(null, 54, cu.tribalGames.toString() + ChatColor.BOLD + playerTribe.toUpperCase() + " Tribe Profile");
 	        	openInventory(p);
 	        	initializeItems(p, playerTribe);
 			}

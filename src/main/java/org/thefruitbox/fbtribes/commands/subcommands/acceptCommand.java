@@ -51,6 +51,8 @@ public class acceptCommand extends SubCommand {
 					
 					p.sendMessage(ChatColor.GREEN + "You have joined " + tribeManager.getTribeShowName(otherTribe) + "!");
 					tribeManager.sendMessageToMembers(otherTribe, ChatColor.GREEN + p.getName() + " has joined the tribe!");
+
+					tribeManager.generateScorePerTribe(otherTribe);
 					
 					invCmd.TribeInvites.remove(otherTribe, p);
 					mainClass.saveTribesFile();

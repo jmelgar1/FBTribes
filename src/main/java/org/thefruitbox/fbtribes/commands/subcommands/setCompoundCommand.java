@@ -43,13 +43,13 @@ public class setCompoundCommand extends SubCommand {
 		
 		if (args.length == 1) {
 			String playerTribe = tribeManager.getPlayerTribe(p);
-			if(tribeManager.CheckForElder(playerTribe, p) == true || tribeManager.CheckForChief(playerTribe, p) == true) {
-				if(warpManager.compoundExists(playerTribe) == false) {
+			if(tribeManager.CheckForElder(playerTribe, p) || tribeManager.CheckForChief(playerTribe, p)) {
+				if(!warpManager.compoundExists(playerTribe)) {
 					int vault = tribeManager.getVault(playerTribe);
 					if(vault >= priceToSetCompound) {
 						tribeManager.removeFromVault(playerTribe, priceToSetCompound, p);
 						warpManager.setCompound(playerTribe, p);
-						
+						tribeManager.generateScorePerTribe(playerTribe);
 					} else {
 						p.sendMessage(ChatColor.RED + "You need at least " + priceToSetCompound + " sponges in the tribe vault to set the tribe compound!");
 					}

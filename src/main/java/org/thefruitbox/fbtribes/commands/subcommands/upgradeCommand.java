@@ -44,7 +44,7 @@ public class upgradeCommand extends SubCommand {
 		
 		if(!playerTribe.equals("none")) {
 			if(args.length == 1) {
-				if(tribeManager.CheckForChief(playerTribe, p) == true) {
+				if(tribeManager.CheckForChief(playerTribe, p)) {
 					if(tribeManager.getLevel(playerTribe) != 10) {
 						tribeManager.removeFromVault(playerTribe, upgradeCost, p);
 						tribeManager.upgradeTribe(playerTribe, tribeVault, p);

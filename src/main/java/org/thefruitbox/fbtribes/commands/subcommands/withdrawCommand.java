@@ -65,12 +65,13 @@ public class withdrawCommand extends SubCommand {
 	                    p.getInventory().addItem(sponges);
 	                    tribeManager.removeFromVault(playerTribe, amountToGive, p);
 	                    p.sendMessage(ChatColor.GREEN + "You received " + amountToGive + " sponges from the tribe vault.");
+						tribeManager.generateScorePerTribe(playerTribe);
 	                } else {
 	                    p.sendMessage(ChatColor.RED + "Your inventory is full. Could not retrieve any sponges.");
 	                }
 					
 					
-				} else if(isNumeric(amount) == true) {
+				} else if(isNumeric(amount)) {
 					   int intAmount = Integer.parseInt(amount);
 		                ItemStack sponges = new ItemStack(Material.SPONGE, intAmount);
 
@@ -84,6 +85,8 @@ public class withdrawCommand extends SubCommand {
 		                    tribeManager.removeFromVault(playerTribe, amountToGive, p);
 		                    p.getInventory().addItem(sponges);
 		                    p.sendMessage(ChatColor.GREEN + "You received " + amountToGive + " sponges.");
+
+							tribeManager.generateScorePerTribe(playerTribe);
 		                } else {
 		                    p.sendMessage(ChatColor.RED + "Your inventory is full. Could not give any sponges.");
 		                }

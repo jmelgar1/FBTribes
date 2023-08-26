@@ -1,8 +1,5 @@
 package org.thefruitbox.fbtribes.commands.subcommands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.entity.Player;
 import org.thefruitbox.fbtribes.Main;
 import org.thefruitbox.fbtribes.commands.SubCommand;
@@ -56,6 +53,7 @@ public class compoundCommand extends SubCommand {
 					if(warpManager.compoundExists(playerTribe)) {
 						if(!warpManager.inWarp.contains(p)) {
 							warpManager.warpPlayer(playerTribe, p);
+							tribeManager.generateScorePerTribe(playerTribe);
 						} else {
 							p.sendMessage(ChatColor.RED + "Please wait before doing that again!");
 						}

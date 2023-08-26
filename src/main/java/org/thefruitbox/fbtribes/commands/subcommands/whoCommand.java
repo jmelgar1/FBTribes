@@ -49,12 +49,10 @@ public class whoCommand extends SubCommand {
 		if(args.length == 2) {
 			
 			OfflinePlayer pl = Bukkit.getServer().getOfflinePlayer(args[1]);
-			
-			if(pl != null) {
-				String playerTribe = tribeManager.getOfflinePlayerTribe(pl);
-				ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe);
-				tribeManager.getTribeInfo(tribesFile, tribeSection, playerTribe, p, true);
-			}
+
+			String playerTribe = tribeManager.getOfflinePlayerTribe(pl);
+			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe);
+			tribeManager.getTribeInfo(tribesFile, tribeSection, playerTribe, p, true);
 		} else {
 			p.sendMessage(ChatColor.RED + "Correct usage: " + getSyntax());
 		}

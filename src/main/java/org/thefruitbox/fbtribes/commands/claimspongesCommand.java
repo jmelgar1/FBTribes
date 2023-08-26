@@ -12,11 +12,13 @@ import org.bukkit.inventory.ItemStack;
 import org.thefruitbox.fbtribes.Main;
 
 import net.md_5.bungee.api.ChatColor;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class claimspongesCommand implements CommandExecutor {
 	
 	//Main instance
-	private Main mainClass = Main.getInstance();
+	private final Main mainClass = Main.getInstance();
+	private final ChatUtilities cu = new ChatUtilities();
 	
 	String cmd1 = "claimsponges";
 
@@ -41,7 +43,7 @@ public class claimspongesCommand implements CommandExecutor {
 	            		    		ItemStack stack = entry.getValue();
 	            		    		if(stack.getAmount() > 0) {
 	            		    			int amountClaimed = unclaimedAmount - stack.getAmount();
-	            		    			p.sendMessage(mainClass.spongeColor + "You have claimed " + amountClaimed + " sponges!");
+	            		    			p.sendMessage(cu.spongeColor + "You have claimed " + amountClaimed + " sponges!");
 	            			    		p.sendMessage(ChatColor.RED + "Inventory full. Could not claim " + stack.getAmount() + " sponges.");
 	            			    		playerRewards.set("unclaimed", stack.getAmount());
 	            			    		break;
@@ -49,7 +51,7 @@ public class claimspongesCommand implements CommandExecutor {
 	            		    	}    	
             		    	} else {
             		    		playerRewards.set("unclaimed", 0);
-            		    		p.sendMessage(mainClass.spongeColor + "You have claimed " + unclaimedAmount + " sponges!");
+            		    		p.sendMessage(cu.spongeColor + "You have claimed " + unclaimedAmount + " sponges!");
             		    	}
             		    	
             		    	mainClass.saveRewardsFile();

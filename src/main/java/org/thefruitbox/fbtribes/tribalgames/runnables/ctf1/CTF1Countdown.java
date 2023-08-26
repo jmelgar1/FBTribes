@@ -28,12 +28,15 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class CTF1Countdown extends BukkitRunnable implements Listener, CTF1Manager {
     
 	//Main instance
 	private Main mainClass = Main.getInstance();
-	
+
+	private final ChatUtilities cu = new ChatUtilities();
+
 	//tribe manager
 	TribeManager tm = new TribeManager();
 	
@@ -84,7 +87,7 @@ public class CTF1Countdown extends BukkitRunnable implements Listener, CTF1Manag
 					p.getWorld().playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 1F, 0F);
 				}
 				
-				Bukkit.broadcastMessage(mainClass.tgPrefix + ChatColor.RED + "Not enough players are in the CTF arena. This event will be skipped!");
+				Bukkit.broadcastMessage(cu.tgPrefix + ChatColor.RED + "Not enough players are in the CTF arena. This event will be skipped!");
 				removeAndCancel();
 				
 			} else {
@@ -105,7 +108,7 @@ public class CTF1Countdown extends BukkitRunnable implements Listener, CTF1Manag
 				//check if there are 2 or more different tribes in the arena
 				if(tribes.size() < 2) {
 					
-					Bukkit.broadcastMessage(mainClass.tgPrefix + ChatColor.RED + "At least 2 tribes must be present in the arena! This event will be skipped!");
+					Bukkit.broadcastMessage(cu.tgPrefix + ChatColor.RED + "At least 2 tribes must be present in the arena! This event will be skipped!");
 					removeAndCancel();
 				
 					//if all requirements are met
@@ -149,7 +152,7 @@ public class CTF1Countdown extends BukkitRunnable implements Listener, CTF1Manag
 
 					//send start message
 					Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "=========" + 
-					mainClass.tribalGames + ChatColor.BOLD + "TRIBAL GAMES" + 
+					cu.tribalGames + ChatColor.BOLD + "TRIBAL GAMES" +
 							ChatColor.DARK_GRAY + "=========");
 					
 					Bukkit.broadcastMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "         CTF Match Started");
@@ -158,7 +161,7 @@ public class CTF1Countdown extends BukkitRunnable implements Listener, CTF1Manag
 							ChatColor.YELLOW + " VS " + ChatColor.BLUE.toString() + ChatColor.BOLD + CTF1Manager.getBlueTeamName());
 					Bukkit.broadcastMessage(ChatColor.DARK_GRAY + "===============================");
 					
-					CTF1Manager.sendParticipantsMessage(mainClass.tgPrefix + ChatColor.GOLD + "Let the games begin!", Sound.ITEM_GOAT_HORN_SOUND_2, 0.5F, 0F);
+					CTF1Manager.sendParticipantsMessage(cu.tgPrefix + ChatColor.GOLD + "Let the games begin!", Sound.ITEM_GOAT_HORN_SOUND_2, 0.5F, 0F);
 					
 					ctf.set("participants", participants);
 					ctf.set("playersInArena", playersInArena);
@@ -232,7 +235,7 @@ public class CTF1Countdown extends BukkitRunnable implements Listener, CTF1Manag
 		}
 		
 		p.sendMessage(ChatColor.GRAY + "-----" +
-				mainClass.tribalGames + ChatColor.BOLD.toString() + "TRIBAL GAMES" +
+				cu.tribalGames + ChatColor.BOLD.toString() + "TRIBAL GAMES" +
 				ChatColor.GRAY + "-----");
 		p.sendMessage(ChatColor.GRAY + "Game: ");
 		p.sendMessage(ChatColor.YELLOW + "Capture The Flag - Site 1");

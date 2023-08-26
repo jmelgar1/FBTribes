@@ -22,11 +22,14 @@ import com.sk89q.worldedit.math.BlockVector3;
 import com.sk89q.worldguard.domains.DefaultDomain;
 
 import net.md_5.bungee.api.ChatColor;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class CTF1BeginEvent extends BukkitRunnable implements CTF1Manager {
 	
 	//Main instance
 	private Main mainClass = Main.getInstance();
+
+	private final ChatUtilities cu = new ChatUtilities();
 	
 	ConfigurationSection redTeam = ctf.getConfigurationSection("teams").getConfigurationSection("red");
 	String teamRed = redTeam.getString("tribe");
@@ -61,10 +64,10 @@ public class CTF1BeginEvent extends BukkitRunnable implements CTF1Manager {
 						regions.getApplicableRegions(position).getRegions().contains(ctf1));
 				
 				p.teleport(BukkitAdapter.adapt(world, position));
-				p.sendMessage(mainClass.tgPrefix + ChatColor.RED + "You have not been selected to participate in CTF!");
+				p.sendMessage(cu.tgPrefix + ChatColor.RED + "You have not been selected to participate in CTF!");
 			} else {
-				
-				//add players who are selected as members to region 
+
+				//add players who are selected as members to region
 				DefaultDomain regionMembers = ctf1.getMembers();
 				regionMembers.addPlayer(p.getName());
 				ctf1.setMembers(regionMembers);
@@ -102,7 +105,7 @@ public class CTF1BeginEvent extends BukkitRunnable implements CTF1Manager {
 		//int redKills = mainClass.getCTF().getConfigurationSection("teams").getConfigurationSection("red").getInt("kills");
 		Scoreboard board = Bukkit.getScoreboardManager().getNewScoreboard();
 		
-		String title = mainClass.tgPrefix + ChatColor.YELLOW.toString() + ChatColor.BOLD + "CTF";
+		String title = cu.tgPrefix + ChatColor.YELLOW.toString() + ChatColor.BOLD + "CTF";
 		Objective obj = board.registerNewObjective("FBCTF", "dummy", title);
 		
 		//empty space

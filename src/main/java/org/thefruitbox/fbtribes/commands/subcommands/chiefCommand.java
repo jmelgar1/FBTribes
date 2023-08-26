@@ -5,11 +5,12 @@ import org.thefruitbox.fbtribes.Main;
 import org.thefruitbox.fbtribes.commands.SubCommand;
 
 import net.md_5.bungee.api.ChatColor;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class chiefCommand extends SubCommand {
 	
 	//Main instance
-	private Main mainClass = Main.getInstance();
+	private final ChatUtilities cu = new ChatUtilities();
 
 	@Override
 	public String getName() {
@@ -31,17 +32,17 @@ public class chiefCommand extends SubCommand {
 
 	@Override
 	public void perform(Player p, String[] args) {
-		p.sendMessage(ChatColor.GRAY + "----- " + mainClass.tribesColor + "TRIBES" + ChatColor.GRAY + " -----");
+		p.sendMessage(ChatColor.GRAY + "----- " + cu.tribesColor + "TRIBES" + ChatColor.GRAY + " -----");
 		p.sendMessage(ChatColor.DARK_RED + "These commands are restricted to Chiefs only!");
-		p.sendMessage(mainClass.lightGreen + "1. " + mainClass.lighterGreen + "/tribes promote" +
+		p.sendMessage(cu.lightGreen + "1. " + cu.lighterGreen + "/tribes promote" +
 				ChatColor.GRAY + " (Promote a player to tribe elder)");
-		p.sendMessage(mainClass.lightGreen + "2. " + mainClass.lighterGreen + "/tribes ownership" +
+		p.sendMessage(cu.lightGreen + "2. " + cu.lighterGreen + "/tribes ownership" +
 				ChatColor.GRAY + " (Transfer tribe ownership to another player)");
-		p.sendMessage(mainClass.lightGreen + "3. " + mainClass.lighterGreen + "/tribes demote" +
+		p.sendMessage(cu.lightGreen + "3. " + cu.lighterGreen + "/tribes demote" +
 				ChatColor.GRAY + " (Demote an elder rank player)");
-		p.sendMessage(mainClass.lightGreen + "4. " + mainClass.lighterGreen + "/tribes delete" +
+		p.sendMessage(cu.lightGreen + "4. " + cu.lighterGreen + "/tribes delete" +
 				ChatColor.GRAY + " (Delete a tribe)");
-		p.sendMessage(mainClass.lightGreen + "5. " + mainClass.lighterGreen + "/tribes rename" +
+		p.sendMessage(cu.lightGreen + "5. " + cu.lighterGreen + "/tribes rename" +
 				ChatColor.GRAY + " (Rename your tribe)");
 		
 //		tribes create [name]

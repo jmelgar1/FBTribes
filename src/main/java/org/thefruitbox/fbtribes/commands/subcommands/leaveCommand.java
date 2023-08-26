@@ -42,6 +42,8 @@ public class leaveCommand extends SubCommand {
 						List<String> members = tribeManager.getTribeMembers(playerTribe);
 						members.remove(p.getUniqueId().toString());
 						tribeManager.setTribeMembers(playerTribe, members);
+
+						tribeManager.generateScorePerTribe(playerTribe);
 						
 						if(tribeManager.CheckForElder(playerTribe, p) == true) {
 							tribeManager.removeElder(playerTribe);
@@ -58,7 +60,5 @@ public class leaveCommand extends SubCommand {
 		} else {
 			p.sendMessage(ChatColor.RED + "Correct usage: /tribes leave [tribe]");
 		}
-		
 	}
-
 }

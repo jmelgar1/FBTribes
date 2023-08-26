@@ -17,8 +17,7 @@ import org.thefruitbox.fbtribes.commands.claimspongesCommand;
 import org.thefruitbox.fbtribes.commands.subcommands.infoCommand;
 import org.thefruitbox.fbtribes.commands.subcommands.admin.addspongesCommand;
 import org.thefruitbox.fbtribes.commands.subcommands.admin.setspongesCommand;
-import org.thefruitbox.fbtribes.events.BreakAncientDebri;
-import org.thefruitbox.fbtribes.events.BreakDiamondOrEmeraldOre;
+import org.thefruitbox.fbtribes.events.BreakRareOre;
 import org.thefruitbox.fbtribes.events.CatchTreasure;
 import org.thefruitbox.fbtribes.events.KillEvent;
 import org.thefruitbox.fbtribes.runnables.CheckForUnclaimed;
@@ -26,8 +25,6 @@ import org.thefruitbox.fbtribes.tribalgames.events.ProtectionEvents;
 import org.thefruitbox.fbtribes.tribalgames.runnables.ctf1.CTF1Countdown;
 
 import com.google.gson.*;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class Main extends JavaPlugin implements Listener {
 
@@ -54,14 +51,6 @@ public class Main extends JavaPlugin implements Listener {
     private File tribesFileJson;
     private JsonObject tribesJson;
 
-    public ChatColor tribesColor = net.md_5.bungee.api.ChatColor.of("#db9e58");
-    public ChatColor lightGreen = net.md_5.bungee.api.ChatColor.of("#95bf56");
-    public ChatColor lighterGreen = net.md_5.bungee.api.ChatColor.of("#b4ba82");
-    public ChatColor spongeColor = net.md_5.bungee.api.ChatColor.of("#dfff00");
-    public ChatColor tribalGames = net.md_5.bungee.api.ChatColor.of("#47b347");
-
-    public String tgPrefix = tribalGames.toString() + ChatColor.BOLD + "TRIBAL GAMES: ";
-
     @Override
     public void onEnable() {
         System.out.println("FBTribes Enabled!");
@@ -81,8 +70,7 @@ public class Main extends JavaPlugin implements Listener {
 
         createTribesFileJson();
 
-        getServer().getPluginManager().registerEvents(new BreakDiamondOrEmeraldOre(), this);
-        getServer().getPluginManager().registerEvents(new BreakAncientDebri(), this);
+        getServer().getPluginManager().registerEvents(new BreakRareOre(), this);
         getServer().getPluginManager().registerEvents(new CatchTreasure(), this);
         getServer().getPluginManager().registerEvents(new KillEvent(), this);
 
@@ -226,24 +214,25 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     private void createTribesFileJson() {
-        tribesFileJson = new File(getDataFolder(), "tribes.json");
+        tribesFileJson = new File(getDataFolder(), "tribes_json.json");
 
         if (!tribesFileJson.exists()) {
             tribesFileJson.getParentFile().mkdirs();
 
             try {
                 tribesFileJson.createNewFile();
-                saveResource("tribes.json", false);
-                System.out.println("(!) tribes.json created");
+                saveResource("tribes_json.json", false);
+                System.out.println("(!) tribe_json.json created");
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }
 
+        tribesJson = new JsonObject();
         try {
             FileReader reader = new FileReader(tribesFileJson);
-            tribesJson = new JsonParser().parse(reader).getAsJsonObject();
-            System.out.println("(!) tribes.json loaded");
+            tribesJson = JsonParser.parseReader(reader).getAsJsonObject();
+            System.out.println("(!) tribes_json.json loaded");
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -255,8 +244,12 @@ public class Main extends JavaPlugin implements Listener {
             new GsonBuilder().setPrettyPrinting().create().toJson(tribesJson, writer);
             writer.close();
         } catch (IOException e) {
-            Bukkit.getConsoleSender().sendMessage("Couldn't save tribes.json");
+            Bukkit.getConsoleSender().sendMessage("Couldn't save tribes_json.json");
             e.printStackTrace();
         }
+    }
+
+    public JsonObject getTribesJson() {
+        return this.tribesJson;
     }
 }

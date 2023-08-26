@@ -1,7 +1,6 @@
 package org.thefruitbox.fbtribes.commands.subcommands;
 
 import org.bukkit.entity.Player;
-import org.thefruitbox.fbtribes.Main;
 import org.thefruitbox.fbtribes.commands.SubCommand;
 
 import net.md_5.bungee.api.ChatColor;

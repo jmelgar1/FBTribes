@@ -67,12 +67,11 @@ public class CommandManager implements CommandExecutor {
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 		
-		if(sender instanceof Player) {
-			Player p = (Player) sender;
+		if(sender instanceof Player p) {
 			if(args.length == 0) {
 				helpCommand help = new helpCommand();
 				help.perform(p, args);
-			} else if(args.length > 0) {
+			} else {
 				for(int i = 0; i < this.getSubCommands().size(); i++) {
 					if(args[0].equalsIgnoreCase(this.getSubCommands().get(i).getName())) {
 						this.getSubCommands().get(i).perform(p, args);

@@ -46,7 +46,7 @@ public class ProtectionEvents extends CTFEvents implements Listener, CTF1Manager
 	public void breakBlocks(BlockBreakEvent e) {
 		Block b = e.getBlock();
 		
-		if(ctf.getBoolean("event") == false) {
+		if(!ctf.getBoolean("event")) {
 			if(regions.getApplicableRegions(VectorUtilities.getBlockVector(b)).getRegions().contains(ctf1)) {
 				e.setCancelled(true);
 			}

@@ -59,7 +59,7 @@ public class renameCommand extends SubCommand {
 			String showName = args[1];
 			
 			if(!playerTribe.equals("none")) {
-				if(tribeManager.CheckForChief(playerTribe, p) == true) {
+				if(tribeManager.CheckForChief(playerTribe, p)) {
 					if(!playerTribe.equals(databaseName)) {
 						int vault = tribeManager.getVault(playerTribe);
 						if(vault >= priceToRename) {

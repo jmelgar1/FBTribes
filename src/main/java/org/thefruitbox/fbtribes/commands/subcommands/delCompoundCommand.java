@@ -34,7 +34,7 @@ public class delCompoundCommand extends SubCommand {
 	public void perform(Player p, String[] args) {
 		if (args.length == 1) {
 			String playerTribe = tribeManager.getPlayerTribe(p);
-			if(tribeManager.CheckForElder(playerTribe, p) == true || tribeManager.CheckForChief(playerTribe, p) == true) {
+			if(tribeManager.CheckForElder(playerTribe, p) || tribeManager.CheckForChief(playerTribe, p)) {
 				warpManager.deleteCompound(playerTribe, p);
 			} else {
 				p.sendMessage(ChatColor.RED + "Only chiefs and elders can set warps!");

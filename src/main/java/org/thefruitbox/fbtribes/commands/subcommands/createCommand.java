@@ -14,11 +14,13 @@ import org.thefruitbox.fbtribes.Main;
 import org.thefruitbox.fbtribes.commands.SubCommand;
 
 import net.md_5.bungee.api.ChatColor;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 
 public class createCommand extends SubCommand {
 	
 	//Main instance
 	private Main mainClass = Main.getInstance();
+	private final ChatUtilities cu = new ChatUtilities();
 
 	@Override
 	public String getName() {
@@ -41,7 +43,7 @@ public class createCommand extends SubCommand {
 	public void perform(Player p, String[] args) {
 		if(args.length == 2) {
 			String tribeName = args[1];
-			if(tribeName.matches("[a-zA-Z]+") == true) {
+			if(tribeName.matches("[a-zA-Z]+")) {
 				if(tribeName.length() <= 16 && tribeName.length() >= 4) {
 				FileConfiguration tribesFile = mainClass.getTribes();
 				
@@ -65,7 +67,7 @@ public class createCommand extends SubCommand {
 					}
 				}
 				
-				if(inTribe == false || count == 0) {
+				if(!inTribe || count == 0) {
 					if(tribesFile.getConfigurationSection(tribeName) == null && tribeExists == false) {
 						ConfigurationSection newTribe = tribesFile.createSection(tribeName.toLowerCase());
 						newTribe.set("level", 1);
@@ -95,7 +97,7 @@ public class createCommand extends SubCommand {
 						tribeMembers.add(playerUUID);
 						newTribe.set("members", tribeMembers);
 	 
-						Bukkit.broadcastMessage(mainClass.tribesColor + tribeName + " has been created by " + p.getName() + "!");
+						Bukkit.broadcastMessage(cu.tribesColor + tribeName + " has been created by " + p.getName() + "!");
 						for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
 							pl.getWorld().playSound(pl.getLocation(), Sound.ENTITY_PLAYER_BURP, 1.0F, 0);
 						}

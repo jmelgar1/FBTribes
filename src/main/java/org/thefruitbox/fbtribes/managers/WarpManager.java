@@ -2,17 +2,13 @@ package org.thefruitbox.fbtribes.managers;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.HandlerList;
-import org.bukkit.event.Listener;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.thefruitbox.fbtribes.Main;
 
@@ -35,27 +31,7 @@ public class WarpManager {
 	public static WarpManager getInstance() {
 		return instance;
 	}
-	
-//	public int getNumberOfWarps(String tribe) {
-//		FileConfiguration tribesFile = mainClass.getTribes();
-//		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-//		int currentWarps = tribeSection.getInt("currentWarps");
-//		return currentWarps;
-//	}
-//	
-//	public void setNumberOfWarps(String tribe, int num) {
-//		FileConfiguration tribesFile = mainClass.getTribes();
-//		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-//		tribeSection.set("currentWarps", num);
-//	}
-//	
-//	public int getMaxWarps(String tribe) {
-//		FileConfiguration tribesFile = mainClass.getTribes();
-//		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-//		int maxWarps = tribeSection.getInt("maxWarps");
-//		return maxWarps;
-//	}
-	
+
 	public void setCompound(String tribe, Player p) {
 		FileConfiguration tribesFile = mainClass.getTribes();
 		String playerTribe = tribeManager.getPlayerTribe(p);

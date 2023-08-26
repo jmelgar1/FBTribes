@@ -1,27 +1,22 @@
 package org.thefruitbox.fbtribes.managers;
 
-import java.awt.Color;
 import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.thefruitbox.fbtribes.Main;
 
 import net.md_5.bungee.api.ChatColor;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.md_5.bungee.api.chat.hover.content.Text;
+import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 import org.thefruitbox.fbtribes.utilities.UnicodeCharacters;
 
 public class TribeManager {
@@ -30,6 +25,7 @@ public class TribeManager {
 	private Main mainClass = Main.getInstance();
 
 	UnicodeCharacters uc = new UnicodeCharacters();
+	private ChatUtilities cu = new ChatUtilities();
 	
 	public String getPlayerTribe(Player p) {
 		FileConfiguration tribesFile = mainClass.getTribes();
@@ -302,15 +298,15 @@ public class TribeManager {
 	public String getFoundedDate(String tribe) {
 		FileConfiguration tribesFile = mainClass.getTribes();
 		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		String dateCreated = tribeSection.getString("dateCreated");
-		return dateCreated;
+		assert tribeSection != null;
+		return tribeSection.getString("dateCreated");
 	}
 	
 	public int getRequiredAmountForLevelUp(String tribe) {
 		FileConfiguration tribesFile = mainClass.getTribes();
 		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		int requiredSponges = tribeSection.getInt("requiredSponges");
-		return requiredSponges;
+		assert tribeSection != null;
+		return tribeSection.getInt("requiredSponges");
 	}
 	
 	public int getRating(String tribe) {
@@ -333,15 +329,15 @@ public class TribeManager {
 	public double getEconomyScore(String tribe) {
 		FileConfiguration tribesFile = mainClass.getTribes();
 		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		int economyScore = tribeSection.getInt("economyScore");
-		return economyScore;
+		assert tribeSection != null;
+		return tribeSection.getInt("economyScore");
 	}
 	
 	public double getPowerScore(String tribe) {
 		FileConfiguration tribesFile = mainClass.getTribes();
 		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		double powerScore = tribeSection.getDouble("powerScore");
-		return powerScore;
+		assert tribeSection != null;
+		return tribeSection.getDouble("powerScore");
 	}
 	
 	public void getTribeInfo(FileConfiguration tribesFile, ConfigurationSection tribeSection, String tribe, Player p, boolean bool) {
@@ -361,13 +357,13 @@ public class TribeManager {
 			String dateCreated = tribeSection.getString("dateCreated");
 			
 			
-			p.sendMessage(ChatColor.GRAY + "---------[ " + mainClass.tribesColor + tribeName + ChatColor.GRAY + " ]---------");
-			p.sendMessage(mainClass.lightGreen + uc.foundedDate + "Date Founded: " + mainClass.lighterGreen + dateCreated);
-			p.sendMessage(mainClass.lightGreen + uc.level + "Level: " + mainClass.lighterGreen + level);
-			p.sendMessage(mainClass.lightGreen + uc.vault + "Vault: " + mainClass.lighterGreen + vault);
-			p.sendMessage(mainClass.lightGreen + uc.powerScore + "Power Score: " + mainClass.lighterGreen + powerScore);
-			p.sendMessage(mainClass.lightGreen + uc.chiefCrown + "Chief: " + mainClass.lighterGreen + chief.getName());
-			p.sendMessage(mainClass.lightGreen + uc.elderFace + "Elder: " + mainClass.lighterGreen + elder);
+			p.sendMessage(ChatColor.GRAY + "---------[ " + cu.tribesColor + tribeName + ChatColor.GRAY + " ]---------");
+			p.sendMessage(cu.lightGreen + uc.foundedDate + "Date Founded: " + cu.lighterGreen + dateCreated);
+			p.sendMessage(cu.lightGreen + uc.level + "Level: " + cu.lighterGreen + level);
+			p.sendMessage(cu.lightGreen + uc.vault + "Vault: " + cu.lighterGreen + vault);
+			p.sendMessage(cu.lightGreen + uc.powerScore + "Power Score: " + cu.lighterGreen + powerScore);
+			p.sendMessage(cu.lightGreen + uc.chiefCrown + "Chief: " + cu.lighterGreen + chief.getName());
+			p.sendMessage(cu.lightGreen + uc.elderFace + "Elder: " + cu.lighterGreen + elder);
 			
 			List<String> membersUUID = tribeSection.getStringList("members");
 			List<String> membersIGN = new ArrayList<String>();
@@ -377,13 +373,13 @@ public class TribeManager {
 			
 			String members = membersIGN.stream().collect(Collectors.joining(", "));
 			
-			p.sendMessage(mainClass.lightGreen + uc.member + "Members (" + membersIGN.size() + "/" + getMaxPlayers(tribe) + "): " + mainClass.lighterGreen + "" + members);
+			p.sendMessage(cu.lightGreen + uc.member + "Members (" + membersIGN.size() + "/" + getMaxPlayers(tribe) + "): " + cu.lighterGreen + "" + members);
 			
 			if(bool == false) {
 				if(warpManager.compoundExists(tribeName)) {
-					p.sendMessage(mainClass.lightGreen + uc.compound + "Compound: " + ChatColor.GREEN + "ACTIVE");
+					p.sendMessage(cu.lightGreen + uc.compound + "Compound: " + ChatColor.GREEN + "ACTIVE");
 				} else {
-					p.sendMessage(mainClass.lightGreen + uc.compound + "Compound: " + ChatColor.RED + "INACTIVE");
+					p.sendMessage(cu.lightGreen + uc.compound + "Compound: " + ChatColor.RED + "INACTIVE");
 				}
 				
 			}
@@ -403,15 +399,16 @@ public class TribeManager {
 			mainClass.saveTribesFile();
 		}
 	}
-	
+
+	//disabled for now
 	public void generateRating() {
 		FileConfiguration tribesFile = mainClass.getTribes();
 		for(String tribe : tribesFile.getKeys(false)) {
-			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);		
+			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
 			ConfigurationSection tribalGamesSection = tribeSection.getConfigurationSection("tribalgameswins");
 			int totalWins = tribalGamesSection.getInt("ctf") + tribalGamesSection.getInt("koth") + tribalGamesSection.getInt("tott");
 			int rating = totalWins*100;
-			tribeSection.set("rating", rating);	
+			tribeSection.set("rating", rating);
 			mainClass.saveTribesFile();
 		}
 	}
@@ -432,6 +429,31 @@ public class TribeManager {
 			mainClass.saveTribesFile();
 		}
 	}
+
+	public void generateEconomyPerTribe(String tribe) {
+		FileConfiguration tribesFile = mainClass.getTribes();
+		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
+		int totalSponges = tribeSection.getInt("totalSponges");
+		int currentMembers = tribeSection.getStringList("members").size();
+		double economyScore = (double)totalSponges * (Math.pow(currentMembers, 0.27895));
+		tribeSection.set("economyScore", economyScore);
+		mainClass.saveTribesFile();
+	}
+
+	public void generatePowerScorePerTribe(String tribe) {
+		FileConfiguration tribesFile = mainClass.getTribes();
+		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
+		double economyScore = tribeSection.getDouble("economyScore");
+		ConfigurationSection tribalGamesSection = tribeSection.getConfigurationSection("tribalgameswins");
+
+		double ratingScore = tribalGamesSection.getDouble("rating");
+		double powerScore = economyScore + ratingScore;
+
+		double powerScoreRounded = new BigDecimal(powerScore).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
+
+		tribeSection.set("powerScore", powerScoreRounded);
+		mainClass.saveTribesFile();
+	}
 	
 	public HashMap<String, Double> generateLeaderboard() {	
 		HashMap<String, Double> tribeAndScore = new HashMap<>();
@@ -446,18 +468,26 @@ public class TribeManager {
 
 	public HashMap<String, Double> generateLeaderboardJson() {
 		HashMap<String, Double> tribeAndScore = new HashMap<>();
-		FileConfiguration tribesFile = mainClass.getTribes();
-		for(String tribe : tribesFile.getKeys(false)) {
-			double powerScore = getPowerScore(tribe);
-			String showName = getTribeShowName(tribe);
+		JsonObject tribesJson = mainClass.getTribesJson();
+		for(String tribe : tribesJson.keySet()) {
+			JsonObject tribeObject = tribesJson.getAsJsonObject(tribe);
+			double powerScore = tribeObject.get("powerScore").getAsDouble();
+			String showName = tribeObject.get("showname").getAsString();
 			tribeAndScore.put(showName, powerScore);
 		}
 		return tribeAndScore;
 	}
+
+	public void generateScorePerTribe(String tribe) {
+		generateEconomyPerTribe(tribe);
+		generatePowerScorePerTribe(tribe);
+	}
 	
 	public void generateScore() {
 		generateEconomy();
-		generateRating();
+
+		//disabled for now
+		//generateRating();
 		generatePowerScore();
 	}
 }

@@ -63,24 +63,20 @@ public interface CTF1Manager {
 	
 	static String getRedTeamName() {
 		ConfigurationSection redTeam = ctf.getConfigurationSection("teams").getConfigurationSection("red");
-		String teamRed = redTeam.getString("tribe");
-		return teamRed;
+		return redTeam.getString("tribe");
 	}
 	
 	static String getBlueTeamName() {
 		ConfigurationSection blueTeam = ctf.getConfigurationSection("teams").getConfigurationSection("blue");
-		String teamBlue = blueTeam.getString("tribe");
-		return teamBlue;
+		return blueTeam.getString("tribe");
 	}
 	
 	static List<String> getTribes(){
-		List<String> tribes = ctf.getStringList("tribes");
-		return tribes;
+		return ctf.getStringList("tribes");
 	}
 	
 	static List<String> getParticipants(){
-		List<String> participants = ctf.getStringList("participants");
-		return participants;
+		return ctf.getStringList("participants");
 	}
 	
 	static List<String> getPlayersByTribeName(String tribeName){
@@ -93,14 +89,12 @@ public interface CTF1Manager {
 	
 	static List<String> getBluePlayers(){
 		ConfigurationSection blueTeam = ctf.getConfigurationSection("teams").getConfigurationSection("blue");
-		List<String> bluePlayers = blueTeam.getStringList("players");
-		return bluePlayers;
+		return blueTeam.getStringList("players");
 	}
 	
 	static List<String> getRedPlayers(){
 		ConfigurationSection redTeam = ctf.getConfigurationSection("teams").getConfigurationSection("red");
-		List<String> redPlayers = redTeam.getStringList("players");
-		return redPlayers;
+		return redTeam.getStringList("players");
 	}
 	
 	static List<Player> getPlayersInArena(){
@@ -111,11 +105,8 @@ public interface CTF1Manager {
 	
 	static boolean checkIfBlueFlagIsTaken() {
 		if(getRedTeam().contains("flagholder")) {
-			if(getRedTeam().get("flagholder").equals(null)){
-				return false;
-			} else {
-				return true;
-			}
+			getRedTeam().get("flagholder");
+			return true;
 		} else {
 			return false;
 		}
@@ -123,11 +114,8 @@ public interface CTF1Manager {
 	
 	static boolean checkIfRedFlagIsTaken() {
 		if(getBlueTeam().contains("flagholder")) {
-			if(getBlueTeam().get("flagholder").equals(null)){
-				return false;
-			} else {
-				return true;
-			}
+			getBlueTeam().get("flagholder");
+			return true;
 		} else {
 			return false;
 		}
@@ -135,11 +123,7 @@ public interface CTF1Manager {
 	
 	static boolean checkIfPlayerHasBlueFlag(Player p) {
 		if(getRedTeam().contains("flagholder")) {
-			if(getRedTeam().get("flagholder").equals(p.getName())) {
-				return true;
-			} else {
-				return false;
-			}
+			return getRedTeam().get("flagholder").equals(p.getName());
 		} else {
 			return false;
 		}
@@ -147,11 +131,7 @@ public interface CTF1Manager {
 	
 	static boolean checkIfPlayerHasRedFlag(Player p) {
 		if(getBlueTeam().contains("flagholder")) {
-			if(getBlueTeam().get("flagholder").equals(p.getName())) {
-				return true;
-			} else {
-				return false;
-			}
+			return getBlueTeam().get("flagholder").equals(p.getName());
 		} else {
 			return false;
 		}
