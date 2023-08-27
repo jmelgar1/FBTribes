@@ -1,10 +1,6 @@
 package org.thefruitbox.fbtribes.commands.subcommands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -44,15 +40,15 @@ public class whoCommand extends SubCommand {
 	@Override
 	public void perform(Player p, String[] args) {
 		
-		FileConfiguration tribesFile = mainClass.getTribes();
+		JsonObject tribesJson = mainClass.getTribesJson();
 		
 		if(args.length == 2) {
 			
 			OfflinePlayer pl = Bukkit.getServer().getOfflinePlayer(args[1]);
 
-			String playerTribe = tribeManager.getOfflinePlayerTribe(pl);
-			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe);
-			tribeManager.getTribeInfo(tribesFile, tribeSection, playerTribe, p, true);
+			String playerTribe = tribeManager.getPlayerTribe(pl);
+			JsonObject tribeSection = tribesJson.getAsJsonObject(playerTribe);
+			tribeManager.getTribeInfo(tribesJson, tribeSection, playerTribe, p, true);
 		} else {
 			p.sendMessage(ChatColor.RED + "Correct usage: " + getSyntax());
 		}

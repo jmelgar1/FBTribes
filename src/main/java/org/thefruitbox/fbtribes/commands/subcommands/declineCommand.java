@@ -36,7 +36,7 @@ public class declineCommand extends SubCommand {
 			String otherTribe = args[1];
 			
 			if(invCmd != null) {
-				if(invCmd.CheckForActiveInvite(invCmd.TribeInvites, otherTribe.toLowerCase(), p) == true) {
+				if(invCmd.CheckForActiveInvite(invCmd.TribeInvites, otherTribe.toLowerCase(), p)) {
 					p.sendMessage(ChatColor.RED + "You have declined the invitation to join " + otherTribe);
 					invCmd.TribeInvites.remove(otherTribe, p);
 				} else {

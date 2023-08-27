@@ -42,8 +42,6 @@ public class depositCommand extends SubCommand {
 	@Override
 	public void perform(Player p, String[] args) {
 		String playerTribe = tribeManager.getPlayerTribe(p);
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe);
 		
 		if(!playerTribe.equals("none")) {
 			if(args.length == 2) {

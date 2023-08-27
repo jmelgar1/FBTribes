@@ -43,7 +43,7 @@ public class acceptCommand extends SubCommand {
 			String otherTribe = args[1];
 			
 			if(invCmd != null) {
-				if(invCmd.CheckForActiveInvite(invCmd.TribeInvites, otherTribe.toLowerCase(), p) == true) {
+				if(invCmd.CheckForActiveInvite(invCmd.TribeInvites, otherTribe.toLowerCase(), p)) {
 					List<String> currentMembers = tribeManager.getTribeMembers(otherTribe);
 					currentMembers.add(p.getUniqueId().toString());
 					tribeManager.setTribeMembers(otherTribe, currentMembers);
@@ -55,7 +55,7 @@ public class acceptCommand extends SubCommand {
 					tribeManager.generateScorePerTribe(otherTribe);
 					
 					invCmd.TribeInvites.remove(otherTribe, p);
-					mainClass.saveTribesFile();
+					mainClass.saveTribesFileJson();
 				} else {
 					p.sendMessage(ChatColor.RED + "You do not have an active tribe invite!");
 				}

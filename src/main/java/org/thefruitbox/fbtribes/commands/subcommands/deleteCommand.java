@@ -1,5 +1,6 @@
 package org.thefruitbox.fbtribes.commands.subcommands;
 
+import com.google.gson.JsonObject;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.thefruitbox.fbtribes.Main;
@@ -40,11 +41,12 @@ public class deleteCommand extends SubCommand {
 			if(!playerTribe.equals("none")) {
 				if(tribeManager.CheckForChief(playerTribe, p)) {
 					if(deletedTribe.equalsIgnoreCase(playerTribe)) {
-					String tribe = tribeManager.getPlayerTribe(p);
-					FileConfiguration tribesFile = mainClass.getTribes();
-					tribeManager.sendMessageToMembers(tribe, ChatColor.RED.toString() + ChatColor.BOLD + "The tribe has been deleted!");
-					tribesFile.set(tribe, null);
-					mainClass.saveTribesFile();
+					String tribeName = tribeManager.getPlayerTribe(p);
+					JsonObject tribesJson = mainClass.getTribesJson();
+					tribeManager.sendMessageToMembers(tribeName, ChatColor.RED.toString() + ChatColor.BOLD + "The tribe has been deleted!");
+
+					tribesJson.remove(tribeName);
+					mainClass.saveTribesFileJson();
 					} else {
 						p.sendMessage(ChatColor.RED + "You are not in that tribe!");
 					}

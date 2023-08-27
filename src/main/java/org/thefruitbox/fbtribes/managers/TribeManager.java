@@ -7,7 +7,10 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
@@ -17,36 +20,42 @@ import org.thefruitbox.fbtribes.Main;
 
 import net.md_5.bungee.api.ChatColor;
 import org.thefruitbox.fbtribes.utilities.ChatUtilities;
+import org.thefruitbox.fbtribes.utilities.JsonUtilities;
 import org.thefruitbox.fbtribes.utilities.UnicodeCharacters;
+
+import javax.json.Json;
 
 public class TribeManager {
 
 	//Main instance
 	private Main mainClass = Main.getInstance();
 
-	UnicodeCharacters uc = new UnicodeCharacters();
+	private UnicodeCharacters uc = new UnicodeCharacters();
 	private ChatUtilities cu = new ChatUtilities();
+	private JsonUtilities json = new JsonUtilities();
 	
 	public String getPlayerTribe(Player p) {
-		FileConfiguration tribesFile = mainClass.getTribes();
+		JsonObject tribesJson = mainClass.getTribesJson();
 		String playerUUID = p.getUniqueId().toString();
 		
-		for(String tribe : tribesFile.getKeys(false)) {
-			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
-			if(tribeSection.getStringList("members").contains(playerUUID) || tribeSection.get("chief").equals(playerUUID)) {
+		for(String tribe : tribesJson.keySet()) {
+			JsonObject tribeObject = tribesJson.getAsJsonObject(tribe);
+			JsonArray memberArray = tribeObject.getAsJsonArray("members");
+			if(json.JsonArrayToStringList(memberArray).contains(playerUUID)) {
 				return tribe;
 			}
 		}
 		return "none";
 	}
-	
-	public String getOfflinePlayerTribe(OfflinePlayer p) {
-		FileConfiguration tribesFile = mainClass.getTribes();
+
+	public String getPlayerTribe(OfflinePlayer p) {
+		JsonObject tribesJson = mainClass.getTribesJson();
 		String playerUUID = p.getUniqueId().toString();
-		
-		for(String tribe : tribesFile.getKeys(false)) {
-			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
-			if(tribeSection.getStringList("members").contains(playerUUID) || tribeSection.get("chief").equals(playerUUID)) {
+
+		for(String tribe : tribesJson.keySet()) {
+			JsonObject tribeObject = tribesJson.getAsJsonObject(tribe);
+			JsonArray memberArray = tribeObject.getAsJsonArray("members");
+			if(json.JsonArrayToStringList(memberArray).contains(playerUUID)) {
 				return tribe;
 			}
 		}
@@ -66,117 +75,107 @@ public class TribeManager {
 	}
 	
 	public List<String> getTribeMembers(String tribe){
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		List<String> currentMembers = tribeSection.getStringList("members");
-		return currentMembers;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		JsonArray tribeMembers = tribeObject.getAsJsonArray("members");
+
+		return json.JsonArrayToStringList(tribeMembers);
 	}
 	
 	public void setTribeMembers(String tribe, List<String> updatedMemberList) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		tribeSection.set("members", updatedMemberList);
-		mainClass.saveTribesFile();
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+
+		Gson gson = new Gson();
+		tribeObject.add("members", gson.toJsonTree(updatedMemberList).getAsJsonArray());
+		mainClass.saveTribesFileJson();
 	}
 	
 	public String getTribeShowName(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		String storageName = tribeSection.getString("showname");
-		return storageName;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("showname").getAsString();
 	}
 	
 	public boolean CheckForChief(String tribe, Player p) {
 		String playerUUID = p.getUniqueId().toString();
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		String chief = tribeSection.getString("chief");
-		
-		if(chief.equals(playerUUID)) {
-			return true;
-		}
-		return false;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		String chief = tribeObject.get("chief").getAsString();
+
+		return chief.equals(playerUUID);
 	}
 	
 	public boolean CheckForElder(String tribe, Player p) {
 		String playerUUID = p.getUniqueId().toString();
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		String elder = tribeSection.getString("elder");
-		
-		if(elder.equals(playerUUID)) {
-			return true;
-		}
-		return false;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		String elder = tribeObject.get("elder").getAsString();
+
+		return elder.equals(playerUUID);
 	}
 	
 	public boolean CheckSameTribe(String tribeOne, String tribeTwo) {
-		if(tribeOne.equals(tribeTwo)) {
-			return true;
-		}
-		return false;
+		return tribeOne.equals(tribeTwo);
+	}
+
+	public void setChief(String tribe, Player p) {
+		String playerUUID = p.getUniqueId().toString();
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		tribeObject.addProperty("chief", playerUUID);
+		mainClass.saveTribesFileJson();
+	}
+
+	public String getChief(String tribe) {
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("chief").getAsString();
 	}
 	
 	public void setElder(String tribe, Player p) {
 		String playerUUID = p.getUniqueId().toString();
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		tribeSection.set("elder", playerUUID);
-		mainClass.saveTribesFile();
-	}
-	
-	public void removeElder(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		tribeSection.set("elder", "");
-		mainClass.saveTribesFile();
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		tribeObject.addProperty("elder", playerUUID);
+		mainClass.saveTribesFileJson();
 	}
 	
 	public String getElder(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		String elder = tribeSection.getString("elder");
-		return elder;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("elder").getAsString();
 	}
-	
-	public void setChief(String tribe, Player p) {
-		String playerUUID = p.getUniqueId().toString();
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		tribeSection.set("chief", playerUUID);
-		mainClass.saveTribesFile();
-	}
-	
-	public String getChief(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		String chief = tribeSection.getString("chief");
-		return chief;
+
+	public void removeElder(String tribe) {
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		tribeObject.addProperty("elder", "");
+		mainClass.saveTribesFileJson();
 	}
 	
 	public int getVault(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		int vault = tribeSection.getInt("vault");
-		return vault;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("vault").getAsInt();
 	}
 	
 	public int getCTFWins(String tribe) {
 		int ctf = 0;
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		ConfigurationSection tribalGamesSection = tribeSection.getConfigurationSection("tribalgameswins");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		JsonObject tribalGamesSection = tribeObject.getAsJsonObject("tribalgameswins");
 		
 		if(tribalGamesSection != null) {
-			ctf = tribalGamesSection.getInt("ctf");
+			ctf = tribalGamesSection.get("ctf").getAsInt();
 		}
 
 		return ctf;
 	}
 	
 	public void addToVault(String tribe, int amount, Player p) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
 		int vault = getVault(tribe);
 		int newAmount = vault + amount;
 		ChatColor transactionColor0 = net.md_5.bungee.api.ChatColor.of("#E7761E");
@@ -185,18 +184,18 @@ public class TribeManager {
 		ChatColor transactionColor3 = net.md_5.bungee.api.ChatColor.of("#4BD613");
 		String transactionMessage = transactionColor0 + "Tribe Vault: " + transactionColor1 + vault + transactionColor2 + " -> " + transactionColor3 + newAmount;
 		sendMessageToMembers(tribe, ChatColor.GREEN + "(" + ChatColor.DARK_GREEN + p.getName() + ChatColor.GREEN + ") " + transactionMessage);
-		tribeSection.set("vault", newAmount);
+		tribeObject.addProperty("vault", newAmount);
 		
-		int totalSponges = tribeSection.getInt("totalSponges");
+		int totalSponges = tribeObject.get("totalSponges").getAsInt();
 		totalSponges += amount;
-		tribeSection.set("totalSponges", totalSponges);
+		tribeObject.addProperty("totalSponges", totalSponges);
 		
-		mainClass.saveTribesFile();
+		mainClass.saveTribesFileJson();
 	}
 	
 	public void removeFromVault(String tribe, int amount, Player p) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
 		int vault = getVault(tribe);
 		int newAmount = vault - amount;
 		
@@ -207,154 +206,145 @@ public class TribeManager {
 			ChatColor transactionColor3 = net.md_5.bungee.api.ChatColor.of("#C0A66C");
 			String transactionMessage = transactionColor0 + "Tribe Vault: " + transactionColor1 + vault + transactionColor2 + " -> " + transactionColor3 + newAmount;
 			sendMessageToMembers(tribe, ChatColor.GOLD + "(" + ChatColor.YELLOW + p.getName() + ChatColor.GOLD + ") " + transactionMessage);
-			tribeSection.set("vault", newAmount);
-			mainClass.saveTribesFile();
+			tribeObject.addProperty("vault", newAmount);
+			mainClass.saveTribesFileJson();
 		} else {
 			p.sendMessage(ChatColor.RED + "You can not afford this!");
 		}
 	}
 	
 	public void upgradeTribe(String tribe, int vault, Player p) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
 		
 		if(vault >= 500 && getLevel(tribe) == 9) {
-			tribeSection.set("level", 10);
-			tribeSection.set("maxPlayers", 12);
-			tribeSection.set("requiredSponges", -1);
+			tribeObject.addProperty("level", 10);
+			tribeObject.addProperty("maxPlayers", 12);
+			tribeObject.addProperty("requiredSponges", -1);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 10!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 10!");
 		} else if(vault >= 300 && getLevel(tribe) == 8) {
-			tribeSection.set("level", 9);
-			tribeSection.set("maxPlayers", 11);
-			tribeSection.set("requiredSponges", 1500);
+			tribeObject.addProperty("level", 9);
+			tribeObject.addProperty("maxPlayers", 11);
+			tribeObject.addProperty("requiredSponges", 1500);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 9!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 9!");
 		} else if(vault >= 200 && getLevel(tribe) == 7) {
-			tribeSection.set("level", 8);
-			tribeSection.set("maxPlayers", 10);
-			tribeSection.set("requiredSponges", 1100);
+			tribeObject.addProperty("level", 8);
+			tribeObject.addProperty("maxPlayers", 10);
+			tribeObject.addProperty("requiredSponges", 1100);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 8!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 8!");
 		} else if(vault >= 150 && getLevel(tribe) == 6) {
-			tribeSection.set("level", 7);
-			tribeSection.set("maxPlayers", 9);
-			tribeSection.set("requiredSponges", 800);
+			tribeObject.addProperty("level", 7);
+			tribeObject.addProperty("maxPlayers", 9);
+			tribeObject.addProperty("requiredSponges", 800);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 7!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 7!");
 		} else if(vault >= 125 && getLevel(tribe) == 5) {
-			tribeSection.set("level", 6);
-			tribeSection.set("maxPlayers", 8);
-			tribeSection.set("requiredSponges", 500);
+			tribeObject.addProperty("level", 6);
+			tribeObject.addProperty("maxPlayers", 8);
+			tribeObject.addProperty("requiredSponges", 500);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 6!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 6!");
 		} else if(vault >= 100 && getLevel(tribe) == 4) {
-			tribeSection.set("level", 5);
-			tribeSection.set("maxPlayers", 7);
-			tribeSection.set("requiredSponges", 300);
+			tribeObject.addProperty("level", 5);
+			tribeObject.addProperty("maxPlayers", 7);
+			tribeObject.addProperty("requiredSponges", 300);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 5!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 5!");
 		} else if(vault >= 75 && getLevel(tribe) == 3) {
-			tribeSection.set("level", 4);
-			tribeSection.set("maxPlayers", 6);
-			tribeSection.set("requiredSponges", 200);
+			tribeObject.addProperty("level", 4);
+			tribeObject.addProperty("maxPlayers", 6);
+			tribeObject.addProperty("requiredSponges", 200);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 4!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 4!");
 		} else if(vault >= 50 && getLevel(tribe) == 2) {
-			tribeSection.set("level", 3);
-			tribeSection.set("maxPlayers", 5);
-			tribeSection.set("requiredSponges", 100);
+			tribeObject.addProperty("level", 3);
+			tribeObject.addProperty("maxPlayers", 5);
+			tribeObject.addProperty("requiredSponges", 100);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 3!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 3!");
 		} else if(vault >= 25 && getLevel(tribe) == 1) {
-			tribeSection.set("level", 2);
-			tribeSection.set("maxPlayers", 4);
-			tribeSection.set("requiredSponges", 50);
+			tribeObject.addProperty("level", 2);
+			tribeObject.addProperty("maxPlayers", 4);
+			tribeObject.addProperty("requiredSponges", 50);
 			sendMessageToMembers(tribe, ChatColor.GREEN + p.getName() + " has upgraded the tribe to level 2!");
 			Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + tribe + " has upgraded to level 2!");
 		} else if(vault < 25 && getLevel(tribe) == 1) {
-			tribeSection.set("level", 1);
-			tribeSection.set("maxPlayers", 3);
-			tribeSection.set("requiredSponges", 25);
+			tribeObject.addProperty("level", 1);
+			tribeObject.addProperty("maxPlayers", 3);
+			tribeObject.addProperty("requiredSponges", 25);
 		}
 		
-		mainClass.saveTribesFile();
+		mainClass.saveTribesFileJson();
 	}
 
 	public int getMaxPlayers(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		int maxPlayers = tribeSection.getInt("maxPlayers");
-		return maxPlayers;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("maxPlayers").getAsInt();
 	}
 	
 	public int getLevel(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		int level = tribeSection.getInt("level");
-		return level;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("level").getAsInt();
 	}
 	
 	public String getFoundedDate(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		assert tribeSection != null;
-		return tribeSection.getString("dateCreated");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("dateCreated").getAsString();
 	}
 	
 	public int getRequiredAmountForLevelUp(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		assert tribeSection != null;
-		return tribeSection.getInt("requiredSponges");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("requiredSponges").getAsInt();
 	}
 	
 	public int getRating(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		ConfigurationSection tribalGamesSection = tribeSection.getConfigurationSection("tribalgameswins");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		JsonObject tribalGamesObject = tribeObject.getAsJsonObject("tribalgameswins");
 		
 		int rating = 0;
 		
-		if(tribalGamesSection != null) {
-			rating = tribalGamesSection.getInt("rating");
-		} else {
-			tribeSection.createSection("tribalgameswins");
-			tribeSection.getConfigurationSection("tribalgameswins").set("rating", 0);
+		if(tribalGamesObject != null) {
+			rating = tribalGamesObject.get("rating").getAsInt();
 		}
 		
 		return rating;
 	}
 	
 	public double getEconomyScore(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		assert tribeSection != null;
-		return tribeSection.getInt("economyScore");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("economyScore").getAsInt();
 	}
-	
+
 	public double getPowerScore(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		assert tribeSection != null;
-		return tribeSection.getDouble("powerScore");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		return tribeObject.get("powerScore").getAsDouble();
 	}
 	
-	public void getTribeInfo(FileConfiguration tribesFile, ConfigurationSection tribeSection, String tribe, Player p, boolean bool) {
+	public void getTribeInfo(JsonObject tribesJson, JsonObject tribeObject, String tribe, Player p, boolean bool) {
 		WarpManager warpManager = new WarpManager();
-		if(tribesFile.getConfigurationSection(tribe.toLowerCase()) != null) {
-			String tribeName = tribeSection.getString("showname");
-			int level = tribeSection.getInt("level");
-			int vault = tribeSection.getInt("vault");
-			double powerScore = tribeSection.getDouble("powerScore");
-			OfflinePlayer chief = Bukkit.getServer().getOfflinePlayer(UUID.fromString(tribeSection.getString("chief")));
+		if(tribesJson.getAsJsonObject(tribe.toLowerCase()) != null) {
+			String tribeName = tribeObject.get("showname").getAsString();
+			int level = tribeObject.get("level").getAsInt();
+			int vault = tribeObject.get("vault").getAsInt();
+			double powerScore = tribeObject.get("powerScore").getAsDouble();
+			OfflinePlayer chief = Bukkit.getServer().getOfflinePlayer(UUID.fromString(tribeObject.get("chief").getAsString()));
 			
 			String elder = "";
-			if(!tribeSection.getString("elder").isEmpty()) {
-				elder = Bukkit.getServer().getOfflinePlayer(UUID.fromString(tribeSection.getString("elder"))).getName();
+			if(!tribeObject.get("elder").getAsString().isEmpty()) {
+				elder = Bukkit.getServer().getOfflinePlayer(UUID.fromString(tribeObject.get("elder").getAsString())).getName();
 			}
 	
-			String dateCreated = tribeSection.getString("dateCreated");
+			String dateCreated = tribeObject.get("dateCreated").getAsString();
 			
 			
 			p.sendMessage(ChatColor.GRAY + "---------[ " + cu.tribesColor + tribeName + ChatColor.GRAY + " ]---------");
@@ -365,7 +355,7 @@ public class TribeManager {
 			p.sendMessage(cu.lightGreen + uc.chiefCrown + "Chief: " + cu.lighterGreen + chief.getName());
 			p.sendMessage(cu.lightGreen + uc.elderFace + "Elder: " + cu.lighterGreen + elder);
 			
-			List<String> membersUUID = tribeSection.getStringList("members");
+			List<String> membersUUID = json.JsonArrayToStringList(tribeObject.get("members").getAsJsonArray());
 			List<String> membersIGN = new ArrayList<String>();
 			for(String member : membersUUID) {
 				membersIGN.add(Bukkit.getServer().getOfflinePlayer(UUID.fromString(member)).getName());
@@ -373,9 +363,9 @@ public class TribeManager {
 			
 			String members = membersIGN.stream().collect(Collectors.joining(", "));
 			
-			p.sendMessage(cu.lightGreen + uc.member + "Members (" + membersIGN.size() + "/" + getMaxPlayers(tribe) + "): " + cu.lighterGreen + "" + members);
+			p.sendMessage(cu.lightGreen + uc.member + "Members (" + membersIGN.size() + "/" + getMaxPlayers(tribe) + "): " + cu.lighterGreen + members);
 			
-			if(bool == false) {
+			if(!bool) {
 				if(warpManager.compoundExists(tribeName)) {
 					p.sendMessage(cu.lightGreen + uc.compound + "Compound: " + ChatColor.GREEN + "ACTIVE");
 				} else {
@@ -389,81 +379,71 @@ public class TribeManager {
 	}
 	
 	public void generateEconomy() {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		for(String tribe : tribesFile.getKeys(false)) {
-			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
-			int totalSponges = tribeSection.getInt("totalSponges");
-			int currentMembers = tribeSection.getStringList("members").size();
+		JsonObject tribesJson = mainClass.getTribesJson();
+		for(String tribe : tribesJson.keySet()) {
+			JsonObject tribeObject = tribesJson.getAsJsonObject(tribe);
+			int totalSponges = tribeObject.get("totalSponges").getAsInt();
+			int currentMembers = tribeObject.get("members").getAsJsonArray().size();
 			double economyScore = (double)totalSponges * (Math.pow(currentMembers, 0.27895));
-			tribeSection.set("economyScore", economyScore);
-			mainClass.saveTribesFile();
+			tribeObject.addProperty("economyScore", economyScore);
+			mainClass.saveTribesFileJson();
 		}
 	}
 
 	//disabled for now
 	public void generateRating() {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		for(String tribe : tribesFile.getKeys(false)) {
-			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
-			ConfigurationSection tribalGamesSection = tribeSection.getConfigurationSection("tribalgameswins");
-			int totalWins = tribalGamesSection.getInt("ctf") + tribalGamesSection.getInt("koth") + tribalGamesSection.getInt("tott");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		for(String tribe : tribesJson.keySet()) {
+			JsonObject tribeObject = tribesJson.getAsJsonObject(tribe);
+			JsonObject tribalGamesObject = tribeObject.getAsJsonObject("tribalgameswins");
+			int totalWins = tribalGamesObject.get("ctf").getAsInt() +
+					tribalGamesObject.get("koth").getAsInt() + tribalGamesObject.get("tott").getAsInt();
 			int rating = totalWins*100;
-			tribeSection.set("rating", rating);
-			mainClass.saveTribesFile();
+			tribeObject.addProperty("rating", rating);
+			mainClass.saveTribesFileJson();
 		}
 	}
 	
 	public void generatePowerScore() {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		for(String tribe : tribesFile.getKeys(false)) {
-			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
-			double economyScore = tribeSection.getDouble("economyScore");
-			ConfigurationSection tribalGamesSection = tribeSection.getConfigurationSection("tribalgameswins");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		for(String tribe : tribesJson.keySet()) {
+			JsonObject tribeObject = tribesJson.getAsJsonObject(tribe);
+			double economyScore = tribeObject.get("economyScore").getAsDouble();
+			JsonObject tribalGamesObject = tribeObject.getAsJsonObject("tribalgameswins");
 			
-			double ratingScore = tribalGamesSection.getDouble("rating");
+			double ratingScore = tribalGamesObject.get("rating").getAsDouble();
 			double powerScore = economyScore + ratingScore;
 			
 			double powerScoreRounded = new BigDecimal(powerScore).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
-			
-			tribeSection.set("powerScore", powerScoreRounded);	
-			mainClass.saveTribesFile();
+
+			tribeObject.addProperty("powerScore", powerScoreRounded);
+			mainClass.saveTribesFileJson();
 		}
 	}
 
 	public void generateEconomyPerTribe(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
-		int totalSponges = tribeSection.getInt("totalSponges");
-		int currentMembers = tribeSection.getStringList("members").size();
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe);
+		int totalSponges = tribeObject.get("totalSponges").getAsInt();
+		int currentMembers = tribeObject.get("members").getAsJsonArray().size();
 		double economyScore = (double)totalSponges * (Math.pow(currentMembers, 0.27895));
-		tribeSection.set("economyScore", economyScore);
-		mainClass.saveTribesFile();
+		tribeObject.addProperty("economyScore", economyScore);
+		mainClass.saveTribesFileJson();
 	}
 
 	public void generatePowerScorePerTribe(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe);
-		double economyScore = tribeSection.getDouble("economyScore");
-		ConfigurationSection tribalGamesSection = tribeSection.getConfigurationSection("tribalgameswins");
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe);
+		double economyScore = tribeObject.get("economyScore").getAsDouble();
+		JsonObject tribalGamesObject = tribeObject.getAsJsonObject("tribalgameswins");
 
-		double ratingScore = tribalGamesSection.getDouble("rating");
+		double ratingScore = tribalGamesObject.get("rating").getAsDouble();
 		double powerScore = economyScore + ratingScore;
 
 		double powerScoreRounded = new BigDecimal(powerScore).setScale(1, BigDecimal.ROUND_HALF_UP).doubleValue();
 
-		tribeSection.set("powerScore", powerScoreRounded);
-		mainClass.saveTribesFile();
-	}
-	
-	public HashMap<String, Double> generateLeaderboard() {	
-		HashMap<String, Double> tribeAndScore = new HashMap<>();
-		FileConfiguration tribesFile = mainClass.getTribes();
-		for(String tribe : tribesFile.getKeys(false)) {
-			double powerScore = getPowerScore(tribe);
-			String showName = getTribeShowName(tribe);
-			tribeAndScore.put(showName, powerScore);
-		}
-		return tribeAndScore;
+		tribeObject.addProperty("powerScore", powerScoreRounded);
+		mainClass.saveTribesFileJson();
 	}
 
 	public HashMap<String, Double> generateLeaderboardJson() {

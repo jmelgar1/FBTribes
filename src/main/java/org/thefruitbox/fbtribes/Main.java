@@ -1,9 +1,6 @@
 package org.thefruitbox.fbtribes;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
+import java.io.*;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -31,9 +28,9 @@ public class Main extends JavaPlugin implements Listener {
     //Main instance
     private static Main instance;
 
-    //player data file
-    private File tribesFile;
-    private FileConfiguration tribes;
+//    //player data file
+//    private File tribesFile;
+//    private FileConfiguration tribes;
 
     //unclaimed rewards file
     private File rewardsFile;
@@ -63,7 +60,7 @@ public class Main extends JavaPlugin implements Listener {
         getCommand("addsponges").setExecutor(new addspongesCommand());
         getCommand("beginctf").setExecutor(new beginCTF());
 
-        createTribesFile();
+        //createTribesFile();
         createRewardsFile();
         createPricesFile();
         createCTFFile();
@@ -93,35 +90,35 @@ public class Main extends JavaPlugin implements Listener {
         return instance;
     }
 
-    //PLAYER DATA FILE
-    public void saveTribesFile() {
-        try {
-            tribes.save(tribesFile);
-        } catch (IOException e) {
-            Bukkit.getConsoleSender().sendMessage("Couldn't save tribes.yml");
-        }
-    }
-
-    public FileConfiguration getTribes() {
-        return this.tribes;
-    }
-
-    private void createTribesFile() {
-        tribesFile = new File(getDataFolder(), "tribes.yml");
-        if(!tribesFile.exists()) {
-            tribesFile.getParentFile().mkdirs();
-            saveResource("tribes.yml", false);
-            System.out.println("(!) tribes.yml created");
-        }
-
-        tribes = new YamlConfiguration();
-        try {
-            tribes.load(tribesFile);
-            System.out.println("(!) tribes.yml loaded");
-        } catch(IOException | InvalidConfigurationException e) {
-            e.printStackTrace();
-        }
-    }
+//    //PLAYER DATA FILE
+//    public void saveTribesFile() {
+//        try {
+//            tribes.save(tribesFile);
+//        } catch (IOException e) {
+//            Bukkit.getConsoleSender().sendMessage("Couldn't save tribes.yml");
+//        }
+//    }
+//
+//    public FileConfiguration getTribes() {
+//        return this.tribes;
+//    }
+//
+//    private void createTribesFile() {
+//        tribesFile = new File(getDataFolder(), "tribes.yml");
+//        if(!tribesFile.exists()) {
+//            tribesFile.getParentFile().mkdirs();
+//            saveResource("tribes.yml", false);
+//            System.out.println("(!) tribes.yml created");
+//        }
+//
+//        tribes = new YamlConfiguration();
+//        try {
+//            tribes.load(tribesFile);
+//            System.out.println("(!) tribes.yml loaded");
+//        } catch(IOException | InvalidConfigurationException e) {
+//            e.printStackTrace();
+//        }
+//    }
 
     //REWARDS FILE
     public void saveRewardsFile() {
@@ -228,7 +225,6 @@ public class Main extends JavaPlugin implements Listener {
             }
         }
 
-        tribesJson = new JsonObject();
         try {
             FileReader reader = new FileReader(tribesFileJson);
             tribesJson = JsonParser.parseReader(reader).getAsJsonObject();
@@ -239,13 +235,12 @@ public class Main extends JavaPlugin implements Listener {
     }
 
     public void saveTribesFileJson() {
-        try {
-            FileWriter writer = new FileWriter(tribesFileJson);
-            new GsonBuilder().setPrettyPrinting().create().toJson(tribesJson, writer);
-            writer.close();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
+
+        try (Writer writer = new FileWriter(tribesFileJson)) {
+            gson.toJson(tribesJson, writer);
         } catch (IOException e) {
-            Bukkit.getConsoleSender().sendMessage("Couldn't save tribes_json.json");
-            e.printStackTrace();
+            Bukkit.getConsoleSender().sendMessage("Couldn't save ctf.json");
         }
     }
 

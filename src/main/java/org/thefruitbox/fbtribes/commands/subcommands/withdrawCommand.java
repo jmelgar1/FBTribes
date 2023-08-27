@@ -1,5 +1,6 @@
 package org.thefruitbox.fbtribes.commands.subcommands;
 
+import com.google.gson.JsonObject;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -42,8 +43,8 @@ public class withdrawCommand extends SubCommand {
 	@Override
 	public void perform(Player p, String[] args) {
 		String playerTribe = tribeManager.getPlayerTribe(p);
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe);
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(playerTribe);
 		
 		int vault = 0;
 		

@@ -1,11 +1,11 @@
 package org.thefruitbox.fbtribes.commands.subcommands;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.OfflinePlayer;
@@ -20,6 +20,8 @@ import org.thefruitbox.fbtribes.managers.InventoryManager;
 import org.thefruitbox.fbtribes.managers.TribeManager;
 
 import net.md_5.bungee.api.ChatColor;
+
+import javax.json.JsonValue;
 
 public class renameCommand extends SubCommand {
 	
@@ -51,7 +53,7 @@ public class renameCommand extends SubCommand {
 		int priceToRename = mainClass.getPrices().getInt("changename");
 		
 		String playerTribe = tribeManager.getPlayerTribe(p);
-		FileConfiguration tribesFile = mainClass.getTribes();
+		JsonObject tribesJson = mainClass.getTribesJson();
 		
 		if(args.length == 2) {
 			
@@ -64,9 +66,9 @@ public class renameCommand extends SubCommand {
 						int vault = tribeManager.getVault(playerTribe);
 						if(vault >= priceToRename) {
 							tribeManager.removeFromVault(playerTribe, priceToRename, p);
-							copyConfigSection(tribesFile, playerTribe, databaseName, showName);
+							copyConfigSection(tribesJson, playerTribe, databaseName, showName);
 							
-							mainClass.saveTribesFile();
+							mainClass.saveTribesFileJson();
 							p.sendMessage(ChatColor.GREEN + "Tribe renamed!");
 						} else {
 							p.sendMessage(ChatColor.RED + "You need at least " + priceToRename + " sponges to in the tribe vault change the tribe name!");
@@ -86,20 +88,37 @@ public class renameCommand extends SubCommand {
 		}
 	}
 	
-	@SuppressWarnings({ "rawtypes", "unchecked" })
-	public static void copyConfigSection(FileConfiguration config, String fromPath, String toPath, String showName){
-	    Map<String, Object> vals = config.getConfigurationSection(fromPath).getValues(true);
-	    String toDot = toPath.equals("") ? "" : ".";
-	    for (String s : vals.keySet()){
-	        System.out.println(s);
-	        Object val = vals.get(s);
-	        if (val instanceof List)
-	            val = new ArrayList((List)val);
-	        config.set(toPath + toDot + s, val);
-	    }
-	    
-	    config.getConfigurationSection(toPath).set("showname", showName);
-	    
-	    config.set(fromPath, null);
+	//NEEDS TO BE FIXED. YOU CAN RENAME TO ANY TRIBE (EVEN EXISTING) AND IT JUST DELETES PREVIOUS
+	public static void copyConfigSection(JsonObject jsonObject, String fromPath, String toPath, String showName) {
+		JsonObject sourceSection = jsonObject.getAsJsonObject(fromPath);
+		if (sourceSection == null) {
+			return;
+		}
+
+		JsonObject destinationSection = jsonObject.getAsJsonObject(toPath);
+		if (destinationSection == null) {
+			destinationSection = new JsonObject();
+			jsonObject.add(toPath, destinationSection);
+		}
+
+		for (Map.Entry<String, JsonElement> entry : sourceSection.entrySet()) {
+			String key = entry.getKey();
+			JsonElement value = entry.getValue();
+
+			if (value.isJsonArray()) {
+				JsonArray jsonArray = value.getAsJsonArray();
+				JsonArray newArray = new JsonArray();
+				for (JsonElement element : jsonArray) {
+					newArray.add(element);
+				}
+				destinationSection.add(key, newArray);
+			} else {
+				destinationSection.add(key, value);
+			}
+		}
+
+		destinationSection.addProperty("showname", showName);
+
+		jsonObject.remove(fromPath);
 	}
 }

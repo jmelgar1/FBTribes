@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.stream.Collectors;
 
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -80,13 +81,13 @@ public class CTF1EndEvent extends BukkitRunnable implements CTF1Manager {
             	Bukkit.broadcastMessage(" ");
             	amount = 100;
             	
-            	FileConfiguration tribesFile = mainClass.getTribes();
-            	ConfigurationSection tribeSection = tribesFile.getConfigurationSection(entry.getKey());
-            	ConfigurationSection tribalGamesSection = tribeSection.getConfigurationSection("tribalgameswins");
+            	JsonObject tribesJson = mainClass.getTribesJson();
+				JsonObject tribeObject = tribesJson.getAsJsonObject(entry.getKey());
+				JsonObject tribalGamesObject = tribeObject.getAsJsonObject("tribalgameswins");
         	
-        		int ctfWins = tribalGamesSection.getInt("ctf");
+        		int ctfWins = tribalGamesObject.get("ctf").getAsInt();
         		ctfWins += 1;
-        		tribalGamesSection.set("ctf", ctfWins);
+				tribalGamesObject.addProperty("ctf", ctfWins);
 
             	
             	mainClass.saveCTFFile();

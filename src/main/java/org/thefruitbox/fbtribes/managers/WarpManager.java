@@ -3,6 +3,7 @@ package org.thefruitbox.fbtribes.managers;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
@@ -33,62 +34,60 @@ public class WarpManager {
 	}
 
 	public void setCompound(String tribe, Player p) {
-		FileConfiguration tribesFile = mainClass.getTribes();
+		JsonObject tribesJson = mainClass.getTribesJson();
 		String playerTribe = tribeManager.getPlayerTribe(p);
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe.toLowerCase());
+		JsonObject tribeObject = tribesJson.getAsJsonObject(playerTribe.toLowerCase());
 		
 		Location loc = p.getLocation();
-		ConfigurationSection compound = tribeSection.createSection("compound");
-		compound.set("world", loc.getWorld().getName() + "");
-		compound.set("x", loc.getX() + "");
-		compound.set("y", loc.getY() + "");
-		compound.set("z", loc.getZ() + "");
-		compound.set("yaw", loc.getYaw() + "");
-		compound.set("pitch", loc.getPitch() + "");
+		JsonObject compound = new JsonObject();
+		compound.addProperty("world", loc.getWorld().getName() + "");
+		compound.addProperty("x", loc.getX() + "");
+		compound.addProperty("y", loc.getY() + "");
+		compound.addProperty("z", loc.getZ() + "");
+		compound.addProperty("yaw", loc.getYaw() + "");
+		compound.addProperty("pitch", loc.getPitch() + "");
+
+		tribeObject.add("compound", compound);
 		
 		tribeManager.sendMessageToMembers(playerTribe, ChatColor.GREEN + "Tribe compound has been set!");
 		//setNumberOfWarps(playerTribe, 1);
         
-		mainClass.saveTribesFile();
+		mainClass.saveTribesFileJson();
 	}
 	
 	public void deleteCompound(String tribe, Player p) {
-		FileConfiguration tribesFile = mainClass.getTribes();
+		JsonObject tribesJson = mainClass.getTribesJson();
 		String playerTribe = tribeManager.getPlayerTribe(p);
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe.toLowerCase());
+		JsonObject tribeObject = tribesJson.getAsJsonObject(playerTribe.toLowerCase());
 		
 		if(compoundExists(playerTribe)) {
-			tribeSection.set("compound", null);
+			tribeObject.add("compound", null);
 			tribeManager.sendMessageToMembers(playerTribe, ChatColor.RED + "Tribe compound has been removed!");
 			//setNumberOfWarps(playerTribe, 0);
 			
-			mainClass.saveTribesFile();
+			mainClass.saveTribesFileJson();
 		} else {
 			p.sendMessage(ChatColor.RED + "Tribe compound is not set!");
 		}
 	}
 	
 	public Boolean compoundExists(String tribe) {
-		FileConfiguration tribesFile = mainClass.getTribes();
-		ConfigurationSection tribeSection = tribesFile.getConfigurationSection(tribe.toLowerCase());
-		ConfigurationSection compound = tribeSection.getConfigurationSection("compound");
-		
-		if(compound == null) {
-			return false;
-		}
-		
-		return true;
+		JsonObject tribesJson = mainClass.getTribesJson();
+		JsonObject tribeObject = tribesJson.getAsJsonObject(tribe.toLowerCase());
+		JsonObject compoundObject = tribeObject.getAsJsonObject("compound");
+
+		return compoundObject != null;
 	}
 	
 	public void warpPlayer(String tribe, Player p) {
 	    inWarp.add(p);
 
-	    FileConfiguration tribesFile = mainClass.getTribes();
+		JsonObject tribesJson = mainClass.getTribesJson();
 	    String playerTribe = tribeManager.getPlayerTribe(p);
-	    ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe.toLowerCase());
-	    ConfigurationSection compound = tribeSection.getConfigurationSection("compound");
+		JsonObject tribeObject = tribesJson.getAsJsonObject(playerTribe.toLowerCase());
+		JsonObject compoundObject = tribeObject.getAsJsonObject("compound");
 	   
-	    if (compound != null) {
+	    if (compoundObject != null) {
 	        p.sendMessage(ChatColor.GREEN + "Warping in 5 seconds...");
 
 	        BukkitRunnable warpTask = new BukkitRunnable() {
@@ -101,12 +100,12 @@ public class WarpManager {
 	                }           
 
 	                // Retrieve warp location from config
-	                double x = Double.parseDouble(compound.getString("x"));
-	                double y = Double.parseDouble(compound.getString("y"));
-	                double z = Double.parseDouble(compound.getString("z"));
-	                int yaw = (int) Double.parseDouble(compound.getString("yaw"));
-	                int pitch = (int) Double.parseDouble(compound.getString("pitch"));
-	                String world = compound.getString("world");
+	                double x = Double.parseDouble(compoundObject.get("x").getAsString());
+	                double y = Double.parseDouble(compoundObject.get("y").getAsString());
+	                double z = Double.parseDouble(compoundObject.get("x").getAsString());
+	                int yaw = (int) Double.parseDouble(compoundObject.get("yaw").getAsString());
+	                int pitch = (int) Double.parseDouble(compoundObject.get("pitch").getAsString());
+	                String world = compoundObject.get("world").getAsString();
 	                Location loc = new Location(Bukkit.getWorld(world), x, y, z, yaw, pitch);
 
 	                // Teleport player

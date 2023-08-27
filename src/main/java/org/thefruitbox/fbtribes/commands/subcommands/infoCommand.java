@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
+import com.google.gson.JsonObject;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -61,7 +62,7 @@ public class infoCommand extends SubCommand implements Listener {
 	@Override
 	public void perform(Player p, String[] args) {
 		String playerTribe = tribeManager.getPlayerTribe(p);
-		FileConfiguration tribesFile = mainClass.getTribes();
+		JsonObject tribesFile = mainClass.getTribesJson();
 		
 		//player's tribe
 		if(args.length == 1) {
@@ -71,7 +72,7 @@ public class infoCommand extends SubCommand implements Listener {
 	        	openInventory(p);
 	        	initializeItems(p, playerTribe);
 				
-				ConfigurationSection tribeSection = tribesFile.getConfigurationSection(playerTribe);
+				JsonObject tribeSection = tribesFile.getAsJsonObject(playerTribe);
 				tribeManager.getTribeInfo(tribesFile, tribeSection, playerTribe, p, false);
 				
 			} else {
@@ -81,8 +82,8 @@ public class infoCommand extends SubCommand implements Listener {
 			//other players tribe
 		} else if (args.length == 2) {
 			String otherTribe = args[1];
-			
-			ConfigurationSection tribeSection = tribesFile.getConfigurationSection(otherTribe.toLowerCase());
+
+			JsonObject tribeSection = tribesFile.getAsJsonObject(otherTribe.toLowerCase());
 			tribeManager.getTribeInfo(tribesFile, tribeSection, otherTribe, p, true);
 		} else {
 			p.sendMessage(ChatColor.RED + "Correct usage: " + getSyntax());

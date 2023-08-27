@@ -10,7 +10,6 @@ import org.thefruitbox.fbtribes.utilities.ChatUtilities;
 public class helpCommand extends SubCommand {
 	
 	//Main instance
-	private Main mainClass = Main.getInstance();
 	private final ChatUtilities cu = new ChatUtilities();
 
 	@Override
